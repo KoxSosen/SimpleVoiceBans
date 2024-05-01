@@ -46,7 +46,7 @@ public class BukkitPluginLoader extends JavaPlugin {
             getLogger().info("Registered the LibertyBans api.");
             getLogger().info("Since this backend server has LibertyBans installed, SimpleVoiceBans presumes that you don't have it installed on the proxy.");
             getLogger().info("Therefore we disable the proxy specific support code in SimpleVoiceBans.");
-        } catch (NoSuchElementException ignored) {
+        } catch (NoSuchElementException | NoClassDefFoundError ignored) {
             getLogger().info("We determined that you do not have LibertyBans installed on this backend server.");
             getLogger().info("Therefore we assume that you have it installed on the proxy.");
             getLogger().info("Enabling proxy support.");
@@ -54,9 +54,9 @@ public class BukkitPluginLoader extends JavaPlugin {
             if (isBungee) {
                 getLogger().info("This server is proxied.");
                 // We need this channel to be able to send the request.
-                getServer().getMessenger().registerOutgoingPluginChannel(this, "simplevoicechat:custom");
+                getServer().getMessenger().registerOutgoingPluginChannel(this, "simplevoicebans:custom");
                 // We need this channel to be able to receive the response.
-                getServer().getMessenger().registerIncomingPluginChannel( this, "simplevoicechat:custom", new MessageReceiver());
+                getServer().getMessenger().registerIncomingPluginChannel( this, "simplevoicebans:custom", new MessageReceiver());
 
             } else {
                 getLogger().info("This server is not proxied.");

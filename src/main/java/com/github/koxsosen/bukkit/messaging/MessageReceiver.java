@@ -9,7 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.net.InetAddress;
 import java.util.Map;
+import java.util.UUID;
 
 public class MessageReceiver implements PluginMessageListener {
     @Override
@@ -26,6 +28,11 @@ public class MessageReceiver implements PluginMessageListener {
 
         if (punishmentPlayerType != null) {
             SimpleVoiceBans.getMuteCache().put(Map.of(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress()), in.readBoolean());
+            SimpleVoiceBans.getMuteCache().forEach((uuidInetAddressMap, aBoolean) -> {
+                for (Map.Entry<UUID, InetAddress> entry : uuidInetAddressMap.entrySet()) {
+                    System.out.println(entry.getKey() + " " + entry.getValue() + " " + aBoolean);
+                }
+            });
         }
 
     }

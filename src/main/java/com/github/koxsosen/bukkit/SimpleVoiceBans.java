@@ -92,8 +92,8 @@ public class SimpleVoiceBans implements VoicechatPlugin {
     private void sendCustomData(Player player, PunishmentPlayerType punishmentPlayerType) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(punishmentPlayerType.getUuid().toString());
-        out.writeUTF(punishmentPlayerType.getInetAddress().toString());
-        player.sendPluginMessage(BukkitPluginLoader.getInstance(),"simplevoicechat:custom", out.toByteArray());
+        out.writeUTF(punishmentPlayerType.getInetAddress().getHostAddress());
+        player.sendPluginMessage(BukkitPluginLoader.getInstance(),"simplevoicebans:custom", out.toByteArray());
     }
 
 }

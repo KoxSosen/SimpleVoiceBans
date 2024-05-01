@@ -25,7 +25,7 @@ public class BungeePluginLoader extends Plugin {
         try {
             Omnibus omnibus = OmnibusProvider.getOmnibus();
             api = omnibus.getRegistry().getProvider(LibertyBans.class).orElseThrow();
-        } catch (NoSuchElementException ignored) {
+        } catch (NoSuchElementException | NoClassDefFoundError ignored) {
             getLogger().info("SimpleVoiceBans on the proxy requires LibertyBans to be installed too.");
             getLogger().info("Install LibertyBans on the proxy, as well as SimpleVoiceChat and SimpleVoiceBans on all backends, and the proxy.");
             getProxy().getPluginManager().unregisterListeners(this);
@@ -36,14 +36,14 @@ public class BungeePluginLoader extends Plugin {
         getLogger().info("Loaded SimpleVoiceBans.");
         getLogger().info("Make sure you have SimpleVoiceChat, and SimpleVoiceBans installed on all backend servers.");
 
-        getProxy().registerChannel("simplevoicechat:custom");
+        getProxy().registerChannel("simplevoicebans:custom");
         getProxy().getPluginManager().registerListener(this, new MessageReceiver());
     }
 
     @Override
     public void onDisable() {
         getProxy().getPluginManager().unregisterListeners(this);
-        getProxy().unregisterChannel("simplevoicechat:custom");
+        getProxy().unregisterChannel("simplevoicebans:custom");
     }
 
     public static LibertyBansApiHelper getLibertyBansApiHelper() {

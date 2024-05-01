@@ -19,13 +19,17 @@ public class MessageReceiver implements Listener {
 
     @EventHandler
     public void on(PluginMessageEvent event) {
-        if (!event.getTag().equalsIgnoreCase("simplevoicechat:custom")) {
+        if (!event.getTag().equalsIgnoreCase("simplevoicebans:custom")) {
             return;
         }
 
         ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
         DataConverter dataConverter = new DataConverter();
-        PunishmentPlayerType punishmentPlayerType = dataConverter.convertToPunishmentPlayerType(in.readUTF(), in.readUTF());
+        String data1 = in.readUTF();
+        String data2 = in.readUTF();
+        System.out.println(data1);
+        System.out.println(data2);
+        PunishmentPlayerType punishmentPlayerType = dataConverter.convertToPunishmentPlayerType(data1, data2);
 
         if (event.getReceiver() instanceof ProxiedPlayer receiver) {
             Boolean isMuted = BungeePluginLoader.getLibertyBansApiHelper().isMuted(BungeePluginLoader.getApi(), punishmentPlayerType);
@@ -45,10 +49,10 @@ public class MessageReceiver implements Listener {
 
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(punishmentPlayerType.getUuid().toString());
-        out.writeUTF(punishmentPlayerType.getInetAddress().toString());
+        out.writeUTF(punishmentPlayerType.getInetAddress().getHostAddress());
         out.writeBoolean(isMuted);
 
-        player.getServer().getInfo().sendData("simplevoicechat:channel", out.toByteArray());
+        player.getServer().getInfo().sendData("simplevoicebans:custom", out.toByteArray());
     }
 
 }

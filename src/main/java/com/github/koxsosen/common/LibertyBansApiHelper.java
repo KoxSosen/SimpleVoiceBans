@@ -6,7 +6,6 @@ import space.arim.libertybans.api.punish.Punishment;
 import space.arim.omnibus.util.concurrent.ReactionStage;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LibertyBansApiHelper {
@@ -17,6 +16,7 @@ public class LibertyBansApiHelper {
             mutes.thenAccept(punishment -> {
                 if (punishment.isPresent()) {
                     isMuted.set(true);
+                    System.out.println("Player is muted!");
                 }
             }).exceptionally((ex) -> null);
             return isMuted.get();
