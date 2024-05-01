@@ -7,3 +7,5 @@ Only this type of setup is supported.
 
 
 Get the latest release from [here](https://github.com/KoxSosen/SimpleVoiceBans/releases), or get a development build from the CI. (to be added).
+
+Additionally please do note that this isn't an official resource from the LibertyBans team, but rather a fun project of mine.
