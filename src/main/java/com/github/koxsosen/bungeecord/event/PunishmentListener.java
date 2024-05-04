@@ -13,17 +13,18 @@ import space.arim.omnibus.events.EventConsumer;
 import space.arim.omnibus.events.ListenerPriorities;
 
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PunishmentListener {
 
-    public void listenToPunishEvent() {
+    public void listenToPostPunishEvent() {
         // After a punishment re-check if someone is muted.
         EventConsumer<PostPunishEvent> listener = event -> {
             if (event.getPunishment().getType().equals(PunishmentType.MUTE)) {
                 if (event.getTarget().isPresent()) {
                     ProxyServer proxyServer = ProxyServer.getInstance();
                     PunishmentPlayerType type = new PunishmentPlayerType(proxyServer.getPlayer(event.getTarget().get()).getUniqueId(), proxyServer.getPlayer(event.getTarget().get()).getAddress().getAddress());
-                    Boolean isMuted = BungeePluginLoader.getLibertyBansApiHelper().isMuted(BungeePluginLoader.getApi(), type);
+                    boolean isMuted = BungeePluginLoader.getLibertyBansApiHelper().isMuted(BungeePluginLoader.getApi(), type);
                     sendCustomDataWithResponse(proxyServer.getPlayer(event.getTarget().get()), type, isMuted);
                 }
             }
@@ -31,13 +32,13 @@ public class PunishmentListener {
         BungeePluginLoader.getOmnibus().getEventBus().registerListener(PostPunishEvent.class, ListenerPriorities.NORMAL, listener);
     }
 
-    public void listenToCalculatedPunishEvent() {
+    public void listenToPostPardonEvent() {
         EventConsumer<PostPardonEvent> listener = event -> {
             if (event.getPunishment().getType().equals(PunishmentType.MUTE)) {
                 if (event.getTarget().isPresent()) {
                     ProxyServer proxyServer = ProxyServer.getInstance();
                     PunishmentPlayerType type = new PunishmentPlayerType(proxyServer.getPlayer(event.getTarget().get()).getUniqueId(), proxyServer.getPlayer(event.getTarget().get()).getAddress().getAddress());
-                    Boolean isMuted = false;
+                    boolean isMuted = false;
                     sendCustomDataWithResponse(proxyServer.getPlayer(event.getTarget().get()), type, isMuted);
                 }
             }
@@ -45,7 +46,7 @@ public class PunishmentListener {
         BungeePluginLoader.getOmnibus().getEventBus().registerListener(PostPardonEvent.class, ListenerPriorities.NORMAL, listener);
     }
 
-    public void sendCustomDataWithResponse(ProxiedPlayer player, PunishmentPlayerType punishmentPlayerType, Boolean isMuted) {
+    public void sendCustomDataWithResponse(ProxiedPlayer player, PunishmentPlayerType punishmentPlayerType, boolean isMuted) {
         Collection<ProxiedPlayer> networkPlayers = ProxyServer.getInstance().getPlayers();
         // perform a check to see if globally are no players
         if (networkPlayers == null || networkPlayers.isEmpty()) {

@@ -3,7 +3,7 @@ package com.github.koxsosen.common;
 import java.net.InetAddress;
 import java.util.UUID;
 
-public class PunishmentPlayerType {
+public final class PunishmentPlayerType {
 
     public PunishmentPlayerType(UUID uuid, InetAddress inetAddress) {
         this.uuid = uuid;

@@ -6,20 +6,27 @@ import space.arim.libertybans.api.punish.Punishment;
 import space.arim.omnibus.util.concurrent.ReactionStage;
 
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LibertyBansApiHelper {
 
-    public Boolean isMuted(LibertyBans api, PunishmentPlayerType punishmentPlayerType) {
+    public boolean isMuted(LibertyBans api, PunishmentPlayerType punishmentPlayerType) {
         AtomicBoolean isMuted = new AtomicBoolean(false);
         ReactionStage<Optional<Punishment>> mutes = api.getSelector().getCachedMute(punishmentPlayerType.getUuid(), NetworkAddress.of(punishmentPlayerType.getInetAddress()));
+        try {
             mutes.thenAcceptAsync(punishment -> {
                 if (punishment.isPresent()) {
                     isMuted.set(true);
                     System.out.println("Player is muted!");
                 }
-            }).exceptionally((ex) -> null);
-            return isMuted.get();
+            }).toCompletableFuture().exceptionally(throwable -> {
+                throwable.printStackTrace();
+                return null;
+            }).get();
+        } catch (InterruptedException | ExecutionException ignored) { }
+
+        return isMuted.get();
     }
 
 

@@ -1,5 +1,6 @@
 package com.github.koxsosen.bungeecord;
 
+import com.github.koxsosen.bungeecord.event.PunishmentListener;
 import com.github.koxsosen.bungeecord.messaging.MessageReceiver;
 import com.github.koxsosen.common.LibertyBansApiHelper;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -31,6 +32,9 @@ public class BungeePluginLoader extends Plugin {
         try {
             omnibus = OmnibusProvider.getOmnibus();
             api = omnibus.getRegistry().getProvider(LibertyBans.class).orElseThrow();
+            PunishmentListener punishmentListener = new PunishmentListener();
+            punishmentListener.listenToPostPunishEvent();
+            punishmentListener.listenToPostPardonEvent();
         } catch (NoSuchElementException | NoClassDefFoundError ignored) {
             getLogger().info("SimpleVoiceBans on the proxy requires LibertyBans to be installed too.");
             getLogger().info("Install LibertyBans on the proxy, as well as SimpleVoiceChat and SimpleVoiceBans on all backends, and the proxy.");

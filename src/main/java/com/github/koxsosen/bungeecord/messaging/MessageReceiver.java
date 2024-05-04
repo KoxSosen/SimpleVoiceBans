@@ -12,7 +12,12 @@ import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.util.Collection;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class MessageReceiver implements Listener {
@@ -25,14 +30,11 @@ public class MessageReceiver implements Listener {
 
         ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
         DataConverter dataConverter = new DataConverter();
-        String data1 = in.readUTF();
-        String data2 = in.readUTF();
-        System.out.println(data1);
-        System.out.println(data2);
-        PunishmentPlayerType punishmentPlayerType = dataConverter.convertToPunishmentPlayerType(data1, data2);
+        PunishmentPlayerType punishmentPlayerType = dataConverter.convertToPunishmentPlayerType(in.readUTF(), in.readUTF());
+
 
         if (event.getReceiver() instanceof ProxiedPlayer receiver) {
-            Boolean isMuted = BungeePluginLoader.getLibertyBansApiHelper().isMuted(BungeePluginLoader.getApi(), punishmentPlayerType);
+            boolean isMuted = BungeePluginLoader.getLibertyBansApiHelper().isMuted(BungeePluginLoader.getApi(), punishmentPlayerType);
             sendCustomDataWithResponse(receiver, punishmentPlayerType, isMuted);
         }
 
@@ -40,7 +42,7 @@ public class MessageReceiver implements Listener {
     }
 
 
-    public void sendCustomDataWithResponse(ProxiedPlayer player, PunishmentPlayerType punishmentPlayerType, Boolean isMuted) {
+    public void sendCustomDataWithResponse(ProxiedPlayer player, PunishmentPlayerType punishmentPlayerType, boolean isMuted) {
         Collection<ProxiedPlayer> networkPlayers = ProxyServer.getInstance().getPlayers();
         // perform a check to see if globally are no players
         if (networkPlayers == null || networkPlayers.isEmpty()) {
@@ -53,6 +55,16 @@ public class MessageReceiver implements Listener {
         out.writeBoolean(isMuted);
 
         player.getServer().getInfo().sendData("simplevoicebans:custom", out.toByteArray());
+    }
+
+    static Object deserialize(byte[] bytes) {
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+
+        try (ObjectInput in = new ObjectInputStream(bis)) {
+            return in.readObject();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
 }

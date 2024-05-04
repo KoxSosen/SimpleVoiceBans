@@ -6,11 +6,16 @@ import com.google.common.io.ByteStreams;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import space.arim.libertybans.api.NetworkAddress;
 import space.arim.libertybans.api.punish.Punishment;
 import space.arim.omnibus.util.concurrent.ReactionStage;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.Optional;
@@ -65,10 +70,12 @@ public class SimpleVoiceBans implements VoicechatPlugin {
                         event.cancel();
                     }
                 } else {
-                    // If the server is bungeecord, we need to send a custom plugin message to the proxy where LibertyBans is installed.
-                    // Then based on the response we determine if the player is muted or not.
-                    // Since this is a network request, it may take a long time, so we need to avoid blocking anything in the meantime.
-                    sendCustomData(eventPlayer, new PunishmentPlayerType(uuid, inetAddress));
+                    Bukkit.getScheduler().runTaskAsynchronously(BukkitPluginLoader.getInstance(), () -> {
+                        // If the server is bungeecord, we need to send a custom plugin message to the proxy where LibertyBans is installed.
+                        // Then based on the response we determine if the player is muted or not.
+                        // Since this is a network request, it may take a long time, so we need to avoid blocking anything in the meantime.
+                        sendCustomData(eventPlayer, new PunishmentPlayerType(uuid, inetAddress));
+                    });
                 }
 
             } else {
@@ -97,6 +104,18 @@ public class SimpleVoiceBans implements VoicechatPlugin {
         out.writeUTF(punishmentPlayerType.getUuid().toString());
         out.writeUTF(punishmentPlayerType.getInetAddress().getHostAddress());
         player.sendPluginMessage(BukkitPluginLoader.getInstance(),"simplevoicebans:custom", out.toByteArray());
+    }
+
+    static byte[] serialize(final Object obj) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        try (ObjectOutputStream out = new ObjectOutputStream(bos)) {
+            out.writeObject(obj);
+            out.flush();
+            return bos.toByteArray();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
 }
