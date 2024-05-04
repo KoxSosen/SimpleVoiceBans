@@ -75,11 +75,14 @@ public class SimpleVoiceBans implements VoicechatPlugin {
 
                 AtomicBoolean isMuted = new AtomicBoolean(false);
                 ReactionStage<Optional<Punishment>> mutes = BukkitPluginLoader.getApi().getSelector().getCachedMute(eventPlayer.getUniqueId(), NetworkAddress.of(eventPlayer.getAddress().getAddress()));
-                mutes.thenAccept(punishment -> {
+                mutes.thenAcceptAsync(punishment -> {
                     if (punishment.isPresent()) {
                         isMuted.set(true);
                     }
-                }).exceptionally((ex) -> null);
+                }).exceptionally((ex) -> {
+                    ex.printStackTrace();
+                    return null;
+                });
 
                 if (isMuted.get()) {
                     event.cancel();

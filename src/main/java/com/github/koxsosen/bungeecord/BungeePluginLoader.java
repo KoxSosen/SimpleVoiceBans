@@ -20,10 +20,16 @@ public class BungeePluginLoader extends Plugin {
 
     public static LibertyBans api;
 
+    public static Omnibus getOmnibus() {
+        return omnibus;
+    }
+
+    public static Omnibus omnibus;
+
     @Override
     public void onEnable() {
         try {
-            Omnibus omnibus = OmnibusProvider.getOmnibus();
+            omnibus = OmnibusProvider.getOmnibus();
             api = omnibus.getRegistry().getProvider(LibertyBans.class).orElseThrow();
         } catch (NoSuchElementException | NoClassDefFoundError ignored) {
             getLogger().info("SimpleVoiceBans on the proxy requires LibertyBans to be installed too.");

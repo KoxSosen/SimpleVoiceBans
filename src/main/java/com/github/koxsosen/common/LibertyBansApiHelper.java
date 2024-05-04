@@ -13,7 +13,7 @@ public class LibertyBansApiHelper {
     public Boolean isMuted(LibertyBans api, PunishmentPlayerType punishmentPlayerType) {
         AtomicBoolean isMuted = new AtomicBoolean(false);
         ReactionStage<Optional<Punishment>> mutes = api.getSelector().getCachedMute(punishmentPlayerType.getUuid(), NetworkAddress.of(punishmentPlayerType.getInetAddress()));
-            mutes.thenAccept(punishment -> {
+            mutes.thenAcceptAsync(punishment -> {
                 if (punishment.isPresent()) {
                     isMuted.set(true);
                     System.out.println("Player is muted!");
