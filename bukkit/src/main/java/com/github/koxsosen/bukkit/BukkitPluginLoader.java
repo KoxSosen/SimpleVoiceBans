@@ -1,6 +1,5 @@
 package com.github.koxsosen.bukkit;
 
-import com.github.koxsosen.bukkit.messaging.MessageReceiver;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import org.bukkit.plugin.java.JavaPlugin;
 import space.arim.libertybans.api.LibertyBans;

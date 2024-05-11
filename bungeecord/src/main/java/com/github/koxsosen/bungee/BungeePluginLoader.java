@@ -1,8 +1,8 @@
-package com.github.koxsosen.bungeecord;
+package com.github.koxsosen.bungee;
 
-import com.github.koxsosen.bungeecord.event.PunishmentListener;
-import com.github.koxsosen.bungeecord.messaging.MessageReceiver;
 import com.github.koxsosen.common.LibertyBansApiHelper;
+import com.github.koxsosen.bungee.event.PunishmentListener;
+import com.github.koxsosen.bungee.messaging.MessageReceiver;
 import net.md_5.bungee.api.plugin.Plugin;
 import space.arim.libertybans.api.LibertyBans;
 import space.arim.omnibus.Omnibus;

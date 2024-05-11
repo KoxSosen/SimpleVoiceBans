@@ -8,13 +8,11 @@ import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import space.arim.libertybans.api.NetworkAddress;
 import space.arim.libertybans.api.punish.Punishment;
 import space.arim.omnibus.util.concurrent.ReactionStage;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.util.Map;

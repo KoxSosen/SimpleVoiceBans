@@ -1,6 +1,6 @@
-package com.github.koxsosen.bungeecord.messaging;
+package com.github.koxsosen.bungee.messaging;
 
-import com.github.koxsosen.bungeecord.BungeePluginLoader;
+import com.github.koxsosen.bungee.BungeePluginLoader;
 import com.github.koxsosen.common.DataConverter;
 import com.github.koxsosen.common.PunishmentPlayerType;
 import com.google.common.io.ByteArrayDataInput;
@@ -16,8 +16,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.util.Collection;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class MessageReceiver implements Listener {

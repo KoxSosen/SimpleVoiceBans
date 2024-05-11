@@ -1,6 +1,5 @@
-package com.github.koxsosen.bukkit.messaging;
+package com.github.koxsosen.bukkit;
 
-import com.github.koxsosen.bukkit.SimpleVoiceBans;
 import com.github.koxsosen.common.DataConverter;
 import com.github.koxsosen.common.PunishmentPlayerType;
 import com.google.common.io.ByteArrayDataInput;

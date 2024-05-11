@@ -1,6 +1,6 @@
-package com.github.koxsosen.bungeecord.event;
+package com.github.koxsosen.bungee.event;
 
-import com.github.koxsosen.bungeecord.BungeePluginLoader;
+import com.github.koxsosen.bungee.BungeePluginLoader;
 import com.github.koxsosen.common.PunishmentPlayerType;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -13,7 +13,6 @@ import space.arim.omnibus.events.EventConsumer;
 import space.arim.omnibus.events.ListenerPriorities;
 
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PunishmentListener {
 

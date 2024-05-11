@@ -7,36 +7,32 @@ version = '1.1-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    maven { url = 'https://maven.maxhenkel.de/repository/public' }
-    maven {
-        name= 'arim-mvn-lgpl3'
-        url = 'https://mvn-repo.arim.space/lesser-gpl3/'
-    }
-    maven {
-        name= 'arim-mvn-gpl3'
-        url = 'https://mvn-repo.arim.space/gpl3/'
-    }
-    maven {
-        name= 'arim-mvn-agpl3'
-        url = 'https://mvn-repo.arim.space/affero-gpl3/'
-    }
-    maven {
-        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
-    }
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url = 'https://oss.sonatype.org/content/repositories/central' }
 }
 
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    compileOnly 'de.maxhenkel.voicechat:voicechat-api:2.5.0'
-    compileOnly 'space.arim.libertybans:bans-api:1.1.0-SNAPSHOT'
-    compileOnly 'org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT'
-    compileOnly 'net.md-5:bungeecord-api:1.19-R0.1-SNAPSHOT'
+allprojects {
+    apply plugin: 'java'
+
+    dependencies {
+        compileOnly 'de.maxhenkel.voicechat:voicechat-api:2.5.0'
+        compileOnly 'space.arim.libertybans:bans-api:1.1.0-SNAPSHOT'
+    }
+
+    repositories {
+        maven { url = 'https://maven.maxhenkel.de/repository/public' }
+        maven {
+            name= 'arim-mvn-lgpl3'
+            url = 'https://mvn-repo.arim.space/lesser-gpl3/'
+        }
+        maven {
+            name= 'arim-mvn-gpl3'
+            url = 'https://mvn-repo.arim.space/gpl3/'
+        }
+        maven {
+            name= 'arim-mvn-agpl3'
+            url = 'https://mvn-repo.arim.space/affero-gpl3/'
+        }
+    }
 }
 
-
-test {
-    useJUnitPlatform()
-}

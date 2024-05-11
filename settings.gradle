@@ -1,2 +1,5 @@
 rootProject.name = 'SimpleVoiceBans'
+include 'bukkit'
+include 'bungeecord'
+include 'common'
 
