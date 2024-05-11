@@ -16,9 +16,11 @@ public class PunishmentListener {
             if (event.getPunishment().getType().equals(PunishmentType.MUTE)) {
                 if (event.getTarget().isPresent()) {
                     ProxyServer proxyServer = ProxyServer.getInstance();
-                    PunishmentPlayerType type = new PunishmentPlayerType(proxyServer.getPlayer(event.getTarget().get()).getUniqueId(), proxyServer.getPlayer(event.getTarget().get()).getAddress().getAddress());
-                    boolean isMuted = BungeePluginLoader.getLibertyBansApiHelper().isMuted(BungeePluginLoader.getApi(), type);
-                    MessageReceiver.sendCustomDataWithResponse(proxyServer.getPlayer(event.getTarget().get()), new PunishmentPlayerType(type.getUuid(), type.getInetAddress(), isMuted));
+                    if (proxyServer.getPlayer(event.getTarget().get()).getUniqueId() != null) {
+                        PunishmentPlayerType type = new PunishmentPlayerType(proxyServer.getPlayer(event.getTarget().get()).getUniqueId(), proxyServer.getPlayer(event.getTarget().get()).getAddress().getAddress());
+                        boolean isMuted = BungeePluginLoader.getLibertyBansApiHelper().isMuted(BungeePluginLoader.getApi(), type);
+                        MessageReceiver.sendCustomDataWithResponse(proxyServer.getPlayer(event.getTarget().get()), new PunishmentPlayerType(type.getUuid(), type.getInetAddress(), isMuted));
+                    }
                 }
             }
         };
@@ -30,9 +32,11 @@ public class PunishmentListener {
             if (event.getPunishment().getType().equals(PunishmentType.MUTE)) {
                 if (event.getTarget().isPresent()) {
                     ProxyServer proxyServer = ProxyServer.getInstance();
-                    PunishmentPlayerType type = new PunishmentPlayerType(proxyServer.getPlayer(event.getTarget().get()).getUniqueId(), proxyServer.getPlayer(event.getTarget().get()).getAddress().getAddress());
-                    boolean isMuted = false;
-                    MessageReceiver.sendCustomDataWithResponse(proxyServer.getPlayer(event.getTarget().get()), new PunishmentPlayerType(type.getUuid(), type.getInetAddress(), isMuted));
+                    if (proxyServer.getPlayer(event.getTarget().get()).getUniqueId() != null) {
+                        PunishmentPlayerType type = new PunishmentPlayerType(proxyServer.getPlayer(event.getTarget().get()).getUniqueId(), proxyServer.getPlayer(event.getTarget().get()).getAddress().getAddress());
+                        boolean isMuted = false;
+                        MessageReceiver.sendCustomDataWithResponse(proxyServer.getPlayer(event.getTarget().get()), new PunishmentPlayerType(type.getUuid(), type.getInetAddress(), isMuted));
+                    }
                 }
             }
         };

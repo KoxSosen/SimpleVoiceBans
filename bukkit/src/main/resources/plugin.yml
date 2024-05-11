@@ -5,3 +5,4 @@ version: 1.0-SNAPSHOT
 softdepend:
   - LibertyBans
 depend: [ voicechat ]
+author: KoxSosen
