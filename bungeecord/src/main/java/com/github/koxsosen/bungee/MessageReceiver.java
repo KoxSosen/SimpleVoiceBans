@@ -18,6 +18,10 @@ public class MessageReceiver implements Listener {
             return;
         }
 
+        if (!(event.getReceiver() instanceof ProxiedPlayer)) {
+            return;
+        }
+
         PunishmentPlayerType punishmentPlayerType = null;
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(event.getData());
@@ -38,13 +42,14 @@ public class MessageReceiver implements Listener {
             return;
         }
 
-        if (event.getReceiver() instanceof ProxiedPlayer receiver) {
-            boolean isMuted = BungeePluginLoader.getLibertyBansApiHelper().isMuted(BungeePluginLoader.getApi(), punishmentPlayerType);
-            sendCustomDataWithResponse(receiver, new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), isMuted));
-        }
+        ProxiedPlayer player = (ProxiedPlayer) event.getReceiver();
+
+        boolean isMuted = BungeePluginLoader.getLibertyBansApiHelper().isMuted(BungeePluginLoader.getApi(), punishmentPlayerType);
+        sendCustomDataWithResponse(player, new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), isMuted));
+
     }
 
-    public static void sendCustomDataWithResponse(ProxiedPlayer player, PunishmentPlayerType punishmentPlayerTypeWithResponse) {
+    public static void sendCustomDataWithResponse(ProxiedPlayer player, PunishmentPlayerType punishmentPlayerType) {
         Collection<ProxiedPlayer> networkPlayers = ProxyServer.getInstance().getPlayers();
         // perform a check to see if globally are no players
         if (networkPlayers == null || networkPlayers.isEmpty()) {
@@ -55,7 +60,7 @@ public class MessageReceiver implements Listener {
         ObjectOutputStream outputStream;
         try {
             outputStream = new ObjectOutputStream(byao);
-            outputStream.writeObject(punishmentPlayerTypeWithResponse);
+            outputStream.writeObject(punishmentPlayerType);
             outputStream.flush();
             outputStream.close();
         } catch (IOException e) {
