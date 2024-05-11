@@ -1,9 +1,6 @@
 package com.github.koxsosen.bungee;
 
 import com.github.koxsosen.common.PunishmentPlayerType;
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -23,11 +20,22 @@ public class MessageReceiver implements Listener {
 
         PunishmentPlayerType punishmentPlayerType = null;
 
-        ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
-        try (ObjectInputStream objectInputStream = new ObjectInputStream((InputStream) in)) {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(event.getData());
+        ObjectInputStream objectInputStream;
+        try {
+            objectInputStream = new ObjectInputStream(inputStream);
             punishmentPlayerType = (PunishmentPlayerType) objectInputStream.readObject();
+            objectInputStream.close();
         } catch (IOException | ClassNotFoundException e) {
-            ProxyServer.getInstance().getLogger().info("Failed to deserialize: " + e);
+            ProxyServer.getInstance().getLogger().info("Unable to deserialize: " + e);
+            return;
+        }
+
+        try {
+            inputStream.close();
+        } catch (IOException e) {
+            ProxyServer.getInstance().getLogger().info("Unable to close stream: " + e);
+            return;
         }
 
         if (event.getReceiver() instanceof ProxiedPlayer receiver) {
@@ -43,15 +51,24 @@ public class MessageReceiver implements Listener {
             return;
         }
 
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-
-        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream((OutputStream) out)) {
-            objectOutputStream.writeObject(punishmentPlayerTypeWithResponse);
+        ByteArrayOutputStream byao = new ByteArrayOutputStream();
+        ObjectOutputStream outputStream;
+        try {
+            outputStream = new ObjectOutputStream(byao);
+            outputStream.writeObject(punishmentPlayerTypeWithResponse);
+            outputStream.flush();
+            outputStream.close();
         } catch (IOException e) {
-            ProxyServer.getInstance().getLogger().info("Failed to seralize object:" + e);
+            ProxyServer.getInstance().getLogger().info("Unable to serialize: " + e);
+            return;
         }
 
-        player.getServer().getInfo().sendData("simplevoicebans:custom", out.toByteArray());
+        player.getServer().getInfo().sendData("simplevoicebans:custom", byao.toByteArray());
+        try {
+            byao.close();
+        } catch (IOException e) {
+            ProxyServer.getInstance().getLogger().info("Unable to close stream: " + e);
+        }
     }
 
 }

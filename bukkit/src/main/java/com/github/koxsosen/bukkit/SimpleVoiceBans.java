@@ -1,8 +1,6 @@
 package com.github.koxsosen.bukkit;
 
 import com.github.koxsosen.common.PunishmentPlayerType;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
@@ -12,9 +10,9 @@ import space.arim.libertybans.api.NetworkAddress;
 import space.arim.libertybans.api.punish.Punishment;
 import space.arim.omnibus.util.concurrent.ReactionStage;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.Optional;
@@ -28,7 +26,6 @@ public class SimpleVoiceBans implements VoicechatPlugin {
         return muteCache;
     }
 
-    // ((UUID - IP) - Represents the player.) - (Boolean) - Determines if they are muted or not.)
     public static Map<Map<UUID, InetAddress>, Boolean> muteCache = new ConcurrentHashMap<>();
 
     @Override
@@ -51,9 +48,6 @@ public class SimpleVoiceBans implements VoicechatPlugin {
             UUID uuid = eventPlayer.getUniqueId();
             InetAddress inetAddress;
 
-            // If the players address is null something went wrong, or they are using some short of protocol
-            // where the address isn't passed down to the backend. However this is wrong, as we need to preform the check
-            // for the IP too, to see if they are IP muted.
             try {
                 inetAddress = eventPlayer.getAddress().getAddress();
             } catch (NullPointerException ignored) {
@@ -69,9 +63,6 @@ public class SimpleVoiceBans implements VoicechatPlugin {
                     }
                 } else {
                     Bukkit.getScheduler().runTaskAsynchronously(BukkitPluginLoader.getInstance(), () -> {
-                        // If the server is bungeecord, we need to send a custom plugin message to the proxy where LibertyBans is installed.
-                        // Then based on the response we determine if the player is muted or not.
-                        // Since this is a network request, it may take a long time, so we need to avoid blocking anything in the meantime.
                         sendCustomData(eventPlayer, new PunishmentPlayerType(uuid, inetAddress));
                     });
                 }
@@ -91,15 +82,26 @@ public class SimpleVoiceBans implements VoicechatPlugin {
     }
 
     private void sendCustomData(Player player, PunishmentPlayerType punishmentPlayerType) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
-        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream((OutputStream) out)) {
-            objectOutputStream.writeObject(punishmentPlayerType);
+        ByteArrayOutputStream byao = new ByteArrayOutputStream();
+        ObjectOutputStream outputStream = null;
+        try {
+            outputStream = new ObjectOutputStream(byao);
+            outputStream.writeObject(punishmentPlayerType);
+            outputStream.flush();
+            outputStream.close();
         } catch (IOException e) {
-            Bukkit.getServer().getLogger().info("Failed to seralize object:" + e);
+            Bukkit.getServer().getLogger().info("Unable to serialize: " + e);
+            return;
         }
 
-        player.sendPluginMessage(BukkitPluginLoader.getInstance(),"simplevoicebans:custom", out.toByteArray());
+        player.sendPluginMessage(BukkitPluginLoader.getInstance(),"simplevoicebans:custom", byao.toByteArray());
+        try {
+            byao.close();
+        } catch (IOException e) {
+            Bukkit.getServer().getLogger().info("Unable to close stream: " + e);
+        }
+
     }
 
 }
