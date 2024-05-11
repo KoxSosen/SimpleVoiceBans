@@ -10,7 +10,6 @@ import space.arim.omnibus.OmnibusProvider;
 
 import java.util.NoSuchElementException;
 
-
 public class BungeePluginLoader extends Plugin {
 
     public static LibertyBansApiHelper libertyBansApiHelper;
@@ -40,7 +39,6 @@ public class BungeePluginLoader extends Plugin {
             getLogger().info("Install LibertyBans on the proxy, as well as SimpleVoiceChat and SimpleVoiceBans on all backends, and the proxy.");
             getProxy().getPluginManager().unregisterListeners(this);
         }
-
 
         libertyBansApiHelper = new LibertyBansApiHelper();
         getLogger().info("Loaded SimpleVoiceBans.");

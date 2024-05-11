@@ -20,14 +20,9 @@ public class LibertyBansApiHelper {
                     isMuted.set(true);
                     System.out.println("Player is muted!");
                 }
-            }).toCompletableFuture().exceptionally(throwable -> {
-                throwable.printStackTrace();
-                return null;
-            }).get();
+            }).toCompletableFuture().exceptionally(throwable -> null).get();
         } catch (InterruptedException | ExecutionException ignored) { }
-
         return isMuted.get();
     }
-
 
 }

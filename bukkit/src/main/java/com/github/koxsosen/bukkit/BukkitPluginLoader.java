@@ -56,7 +56,6 @@ public class BukkitPluginLoader extends JavaPlugin {
                 getServer().getMessenger().registerOutgoingPluginChannel(this, "simplevoicebans:custom");
                 // We need this channel to be able to receive the response.
                 getServer().getMessenger().registerIncomingPluginChannel( this, "simplevoicebans:custom", new MessageReceiver());
-
             } else {
                 getLogger().info("This server is not proxied.");
                 getLogger().info("SimpleVoiceBans without LibertyBans installed requires a proxied backend server.");

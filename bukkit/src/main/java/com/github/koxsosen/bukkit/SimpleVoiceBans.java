@@ -12,8 +12,9 @@ import space.arim.libertybans.api.NetworkAddress;
 import space.arim.libertybans.api.punish.Punishment;
 import space.arim.omnibus.util.concurrent.ReactionStage;
 
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.Optional;
@@ -60,7 +61,6 @@ public class SimpleVoiceBans implements VoicechatPlugin {
             }
 
             if (BukkitPluginLoader.isIsBungee()) {
-
                 // If the map has the details of a player, and they are muted, cancel the event.
                 // If the response from the proxy is delayed, we may not receive it in time, so some audio on the initial check may leak thru.
                 if (getMuteCache().containsKey(Map.of(uuid, inetAddress))) {
@@ -75,45 +75,31 @@ public class SimpleVoiceBans implements VoicechatPlugin {
                         sendCustomData(eventPlayer, new PunishmentPlayerType(uuid, inetAddress));
                     });
                 }
-
             } else {
-
                 AtomicBoolean isMuted = new AtomicBoolean(false);
                 ReactionStage<Optional<Punishment>> mutes = BukkitPluginLoader.getApi().getSelector().getCachedMute(eventPlayer.getUniqueId(), NetworkAddress.of(eventPlayer.getAddress().getAddress()));
-                mutes.thenAcceptAsync(punishment -> {
+                mutes.thenAccept(punishment -> {
                     if (punishment.isPresent()) {
                         isMuted.set(true);
                     }
-                }).exceptionally((ex) -> {
-                    ex.printStackTrace();
-                    return null;
-                });
-
+                }).exceptionally((ex) -> null);
                 if (isMuted.get()) {
                     event.cancel();
                 }
             }
         }
-
     }
 
     private void sendCustomData(Player player, PunishmentPlayerType punishmentPlayerType) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF(punishmentPlayerType.getUuid().toString());
-        out.writeUTF(punishmentPlayerType.getInetAddress().getHostAddress());
-        player.sendPluginMessage(BukkitPluginLoader.getInstance(),"simplevoicebans:custom", out.toByteArray());
-    }
 
-    static byte[] serialize(final Object obj) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        try (ObjectOutputStream out = new ObjectOutputStream(bos)) {
-            out.writeObject(obj);
-            out.flush();
-            return bos.toByteArray();
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream((OutputStream) out)) {
+            objectOutputStream.writeObject(punishmentPlayerType);
+        } catch (IOException e) {
+            Bukkit.getServer().getLogger().info("Failed to seralize object:" + e);
         }
+
+        player.sendPluginMessage(BukkitPluginLoader.getInstance(),"simplevoicebans:custom", out.toByteArray());
     }
 
 }

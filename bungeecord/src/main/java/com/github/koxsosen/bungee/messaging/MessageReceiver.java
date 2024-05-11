@@ -1,8 +1,8 @@
 package com.github.koxsosen.bungee.messaging;
 
 import com.github.koxsosen.bungee.BungeePluginLoader;
-import com.github.koxsosen.common.DataConverter;
 import com.github.koxsosen.common.PunishmentPlayerType;
+import com.github.koxsosen.common.PunishmentPlayerTypeWithResponse;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -12,11 +12,8 @@ import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.util.Collection;
-
 
 public class MessageReceiver implements Listener {
 
@@ -26,21 +23,22 @@ public class MessageReceiver implements Listener {
             return;
         }
 
-        ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
-        DataConverter dataConverter = new DataConverter();
-        PunishmentPlayerType punishmentPlayerType = dataConverter.convertToPunishmentPlayerType(in.readUTF(), in.readUTF());
+        PunishmentPlayerType punishmentPlayerType = null;
 
+        ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
+        try (ObjectInputStream objectInputStream = new ObjectInputStream((InputStream) in)) {
+            punishmentPlayerType = (PunishmentPlayerType) objectInputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            ProxyServer.getInstance().getLogger().info("Failed to deserialize: " + e);
+        }
 
         if (event.getReceiver() instanceof ProxiedPlayer receiver) {
             boolean isMuted = BungeePluginLoader.getLibertyBansApiHelper().isMuted(BungeePluginLoader.getApi(), punishmentPlayerType);
-            sendCustomDataWithResponse(receiver, punishmentPlayerType, isMuted);
+            sendCustomDataWithResponse(receiver, new PunishmentPlayerTypeWithResponse(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), isMuted));
         }
-
-
     }
 
-
-    public void sendCustomDataWithResponse(ProxiedPlayer player, PunishmentPlayerType punishmentPlayerType, boolean isMuted) {
+    public void sendCustomDataWithResponse(ProxiedPlayer player, PunishmentPlayerTypeWithResponse punishmentPlayerTypeWithResponse) {
         Collection<ProxiedPlayer> networkPlayers = ProxyServer.getInstance().getPlayers();
         // perform a check to see if globally are no players
         if (networkPlayers == null || networkPlayers.isEmpty()) {
@@ -48,21 +46,14 @@ public class MessageReceiver implements Listener {
         }
 
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF(punishmentPlayerType.getUuid().toString());
-        out.writeUTF(punishmentPlayerType.getInetAddress().getHostAddress());
-        out.writeBoolean(isMuted);
+
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream((OutputStream) out)) {
+            objectOutputStream.writeObject(punishmentPlayerTypeWithResponse);
+        } catch (IOException e) {
+            ProxyServer.getInstance().getLogger().info("Failed to seralize object:" + e);
+        }
 
         player.getServer().getInfo().sendData("simplevoicebans:custom", out.toByteArray());
-    }
-
-    static Object deserialize(byte[] bytes) {
-        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-
-        try (ObjectInput in = new ObjectInputStream(bis)) {
-            return in.readObject();
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
     }
 
 }

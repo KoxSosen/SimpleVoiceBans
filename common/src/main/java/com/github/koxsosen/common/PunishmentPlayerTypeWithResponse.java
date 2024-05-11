@@ -5,11 +5,13 @@ import java.net.InetAddress;
 import java.util.Objects;
 import java.util.UUID;
 
-public final class PunishmentPlayerType implements Serializable {
+public class PunishmentPlayerTypeWithResponse implements Serializable {
 
     private UUID uuid;
 
     private InetAddress inetAddress;
+
+    private boolean response;
 
     public UUID getUuid() {
         return uuid;
@@ -27,9 +29,14 @@ public final class PunishmentPlayerType implements Serializable {
         this.inetAddress = inetAddress;
     }
 
-    public PunishmentPlayerType(UUID uuid, InetAddress inetAddress) {
+    public boolean getResponse() { return response; }
+
+    public void setResponse(boolean response) { this.response = response; }
+
+    public PunishmentPlayerTypeWithResponse(UUID uuid, InetAddress inetAddress, boolean response) {
         this.uuid = uuid;
         this.inetAddress = inetAddress;
+        this.response = response;
     }
 
     @Override
@@ -37,6 +44,7 @@ public final class PunishmentPlayerType implements Serializable {
         return "PunishmentPlayerType{" +
                 "uuid=" + uuid +
                 ", inetAddress=" + inetAddress +
+                ", response=" + response +
                 '}';
     }
 
@@ -44,13 +52,12 @@ public final class PunishmentPlayerType implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PunishmentPlayerType that = (PunishmentPlayerType) o;
-        return Objects.equals(getUuid(), that.getUuid()) && Objects.equals(getInetAddress(), that.getInetAddress());
+        PunishmentPlayerTypeWithResponse that = (PunishmentPlayerTypeWithResponse) o;
+        return Objects.equals(getUuid(), that.getUuid()) && Objects.equals(getInetAddress(), that.getInetAddress()) && Objects.equals(getResponse(), that.getResponse());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUuid(), getInetAddress());
+        return Objects.hash(getUuid(), getInetAddress(), getResponse());
     }
-
 }
