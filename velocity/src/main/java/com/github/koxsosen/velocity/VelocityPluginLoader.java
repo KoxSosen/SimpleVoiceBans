@@ -54,8 +54,6 @@ public class VelocityPluginLoader {
     public VelocityPluginLoader(ProxyServer server, Logger logger) {
         VelocityPluginLoader.server = server;
         VelocityPluginLoader.logger = logger;
-
-        logger.info("Hello there! I made my first plugin with Velocity.");
     }
 
     @Subscribe
