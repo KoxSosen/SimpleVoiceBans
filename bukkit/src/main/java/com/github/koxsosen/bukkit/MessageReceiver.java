@@ -1,6 +1,6 @@
 package com.github.koxsosen.bukkit;
 
-import com.github.koxsosen.common.PunishmentPlayerTypeWithResponse;
+import com.github.koxsosen.common.PunishmentPlayerType;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
@@ -20,11 +20,11 @@ public class MessageReceiver implements PluginMessageListener {
             return;
         }
 
-        PunishmentPlayerTypeWithResponse punishmentPlayerTypeWithResponse = null;
+        PunishmentPlayerType punishmentPlayerTypeWithResponse = null;
 
         ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
         try (ObjectInputStream objectInputStream = new ObjectInputStream((InputStream) in)) {
-            punishmentPlayerTypeWithResponse = (PunishmentPlayerTypeWithResponse) objectInputStream.readObject();
+            punishmentPlayerTypeWithResponse = (PunishmentPlayerType) objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             Bukkit.getServer().getLogger().info("Failed to deserialize: " + e);
         }

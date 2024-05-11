@@ -11,6 +11,8 @@ public final class PunishmentPlayerType implements Serializable {
 
     private InetAddress inetAddress;
 
+    private boolean response;
+
     public UUID getUuid() {
         return uuid;
     }
@@ -27,9 +29,20 @@ public final class PunishmentPlayerType implements Serializable {
         this.inetAddress = inetAddress;
     }
 
+    public boolean getResponse() { return response; }
+
+    public void setResponse(boolean response) { this.response = response; }
+
+    public PunishmentPlayerType(UUID uuid, InetAddress inetAddress, boolean response) {
+        this.uuid = uuid;
+        this.inetAddress = inetAddress;
+        this.response = response;
+    }
+
     public PunishmentPlayerType(UUID uuid, InetAddress inetAddress) {
         this.uuid = uuid;
         this.inetAddress = inetAddress;
+        this.response = false;
     }
 
     @Override
@@ -37,6 +50,7 @@ public final class PunishmentPlayerType implements Serializable {
         return "PunishmentPlayerType{" +
                 "uuid=" + uuid +
                 ", inetAddress=" + inetAddress +
+                ", response=" + response +
                 '}';
     }
 
@@ -45,12 +59,12 @@ public final class PunishmentPlayerType implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PunishmentPlayerType that = (PunishmentPlayerType) o;
-        return Objects.equals(getUuid(), that.getUuid()) && Objects.equals(getInetAddress(), that.getInetAddress());
+        return Objects.equals(getUuid(), that.getUuid()) && Objects.equals(getInetAddress(), that.getInetAddress()) && Objects.equals(getResponse(), that.getResponse());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUuid(), getInetAddress());
+        return Objects.hash(getUuid(), getInetAddress(), getResponse());
     }
 
 }

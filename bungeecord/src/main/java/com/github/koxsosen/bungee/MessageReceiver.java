@@ -1,8 +1,6 @@
-package com.github.koxsosen.bungee.messaging;
+package com.github.koxsosen.bungee;
 
-import com.github.koxsosen.bungee.BungeePluginLoader;
 import com.github.koxsosen.common.PunishmentPlayerType;
-import com.github.koxsosen.common.PunishmentPlayerTypeWithResponse;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -34,11 +32,11 @@ public class MessageReceiver implements Listener {
 
         if (event.getReceiver() instanceof ProxiedPlayer receiver) {
             boolean isMuted = BungeePluginLoader.getLibertyBansApiHelper().isMuted(BungeePluginLoader.getApi(), punishmentPlayerType);
-            sendCustomDataWithResponse(receiver, new PunishmentPlayerTypeWithResponse(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), isMuted));
+            sendCustomDataWithResponse(receiver, new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), isMuted));
         }
     }
 
-    public void sendCustomDataWithResponse(ProxiedPlayer player, PunishmentPlayerTypeWithResponse punishmentPlayerTypeWithResponse) {
+    public static void sendCustomDataWithResponse(ProxiedPlayer player, PunishmentPlayerType punishmentPlayerTypeWithResponse) {
         Collection<ProxiedPlayer> networkPlayers = ProxyServer.getInstance().getPlayers();
         // perform a check to see if globally are no players
         if (networkPlayers == null || networkPlayers.isEmpty()) {
