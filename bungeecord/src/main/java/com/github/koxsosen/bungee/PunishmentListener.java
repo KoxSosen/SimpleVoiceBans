@@ -11,14 +11,13 @@ import space.arim.omnibus.events.ListenerPriorities;
 public class PunishmentListener {
 
     public void listenToPostPunishEvent() {
-        // After a punishment re-check if someone is muted.
         EventConsumer<PostPunishEvent> listener = event -> {
             if (event.getPunishment().getType().equals(PunishmentType.MUTE)) {
                 if (event.getTarget().isPresent()) {
                     ProxyServer proxyServer = ProxyServer.getInstance();
                     if (proxyServer.getPlayer(event.getTarget().get()).getUniqueId() != null) {
                         PunishmentPlayerType type = new PunishmentPlayerType(proxyServer.getPlayer(event.getTarget().get()).getUniqueId(), proxyServer.getPlayer(event.getTarget().get()).getAddress().getAddress());
-                        boolean isMuted = BungeePluginLoader.getLibertyBansApiHelper().isMuted(BungeePluginLoader.getApi(), type);
+                        boolean isMuted = true;
                         MessageReceiver.sendCustomDataWithResponse(proxyServer.getPlayer(event.getTarget().get()), new PunishmentPlayerType(type.getUuid(), type.getInetAddress(), isMuted));
                     }
                 }

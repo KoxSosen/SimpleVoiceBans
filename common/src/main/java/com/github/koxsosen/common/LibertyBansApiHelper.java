@@ -18,7 +18,6 @@ public class LibertyBansApiHelper {
             mutes.thenAcceptAsync(punishment -> {
                 if (punishment.isPresent()) {
                     isMuted.set(true);
-                    System.out.println("Player is muted!");
                 }
             }).toCompletableFuture().exceptionally(throwable -> null).get();
         } catch (InterruptedException | ExecutionException ignored) { }

@@ -13,16 +13,17 @@ import java.util.Collection;
 public class MessageReceiver implements Listener {
 
     @EventHandler
-    public void on(PluginMessageEvent event) {
+    @SuppressWarnings("unused")
+    public void onPluginMessageReceived(PluginMessageEvent event) {
         if (!event.getTag().equalsIgnoreCase("simplevoicebans:custom")) {
             return;
         }
 
-        if (!(event.getReceiver() instanceof ProxiedPlayer)) {
+        if (!(event.getReceiver() instanceof ProxiedPlayer player)) {
             return;
         }
 
-        PunishmentPlayerType punishmentPlayerType = null;
+        PunishmentPlayerType punishmentPlayerType;
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(event.getData());
         ObjectInputStream objectInputStream;
@@ -41,8 +42,6 @@ public class MessageReceiver implements Listener {
             ProxyServer.getInstance().getLogger().info("Unable to close stream: " + e);
             return;
         }
-
-        ProxiedPlayer player = (ProxiedPlayer) event.getReceiver();
 
         boolean isMuted = BungeePluginLoader.getLibertyBansApiHelper().isMuted(BungeePluginLoader.getApi(), punishmentPlayerType);
         sendCustomDataWithResponse(player, new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), isMuted));

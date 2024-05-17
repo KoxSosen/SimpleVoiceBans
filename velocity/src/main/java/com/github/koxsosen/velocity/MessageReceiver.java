@@ -5,6 +5,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 
 import java.io.*;
 import java.util.Optional;
@@ -14,13 +15,13 @@ import static com.github.koxsosen.velocity.VelocityPluginLoader.IDENTIFIER;
 public class MessageReceiver {
 
     @Subscribe
+    @SuppressWarnings("unused")
     public void onPluginMessageFromBackend(PluginMessageEvent event) {
 
-        if (!(event.getSource() instanceof ServerConnection backend)) {
+        if (!(event.getSource() instanceof Player player)) {
             return;
         }
 
-        // Ensure the identifier is what you expect before trying to handle the data
         if (event.getIdentifier() != IDENTIFIER) {
             return;
         }
@@ -46,7 +47,7 @@ public class MessageReceiver {
         }
 
         boolean isMuted = VelocityPluginLoader.getLibertyBansApiHelper().isMuted(VelocityPluginLoader.getApi(), punishmentPlayerType);
-        sendPluginMessageToBackend(backend.getPlayer(), new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), isMuted));
+        sendPluginMessageToBackend(player, new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), isMuted));
 
     }
 
@@ -66,7 +67,12 @@ public class MessageReceiver {
                 return;
             }
 
-            player.sendPluginMessage(IDENTIFIER, byao.toByteArray());
+
+            player.getCurrentServer()
+                    .map(ServerConnection::getServer)
+                    .ifPresent((RegisteredServer server) -> {
+                        server. sendPluginMessage(IDENTIFIER, byao.toByteArray());
+                    });
 
             try {
                 byao.close();

@@ -62,9 +62,7 @@ public class SimpleVoiceBans implements VoicechatPlugin {
                         event.cancel();
                     }
                 } else {
-                    Bukkit.getScheduler().runTaskAsynchronously(BukkitPluginLoader.getInstance(), () -> {
-                        sendCustomData(eventPlayer, new PunishmentPlayerType(uuid, inetAddress));
-                    });
+                    Bukkit.getScheduler().runTaskAsynchronously(BukkitPluginLoader.getInstance(), () -> sendCustomData(eventPlayer, new PunishmentPlayerType(uuid, inetAddress)));
                 }
             } else {
                 AtomicBoolean isMuted = new AtomicBoolean(false);
@@ -84,7 +82,7 @@ public class SimpleVoiceBans implements VoicechatPlugin {
     private void sendCustomData(Player player, PunishmentPlayerType punishmentPlayerType) {
 
         ByteArrayOutputStream byao = new ByteArrayOutputStream();
-        ObjectOutputStream outputStream = null;
+        ObjectOutputStream outputStream;
         try {
             outputStream = new ObjectOutputStream(byao);
             outputStream.writeObject(punishmentPlayerType);

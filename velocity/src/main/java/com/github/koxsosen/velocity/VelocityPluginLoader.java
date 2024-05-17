@@ -15,7 +15,7 @@ import space.arim.omnibus.OmnibusProvider;
 
 import java.util.NoSuchElementException;
 
-@Plugin(id = "simplevoicebans", name = "SimpleVoiceBans")
+@Plugin(id = "simplevoicebans", name = "SimpleVoiceBans", version = "0.1.0-SNAPSHOT", authors = {"KoxSosen"})
 
 public class VelocityPluginLoader {
 
@@ -57,6 +57,7 @@ public class VelocityPluginLoader {
     }
 
     @Subscribe
+    @SuppressWarnings("unused")
     public void onProxyInitialization(ProxyInitializeEvent event) {
         try {
             omnibus = OmnibusProvider.getOmnibus();
