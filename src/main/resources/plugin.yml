@@ -1,5 +1,0 @@
-main: com.github.koxsosen.PluginLoader
-name: SimpleVoiceBans
-api-version: 1.13
-version: 1.0-SNAPSHOT
-depend: [ voicechat, LibertyBans ]

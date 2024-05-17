@@ -1,0 +1,13 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' } // This lets gradle find the BungeeCord files online
+}
+
+dependencies {
+    compileOnly 'net.md-5:bungeecord-api:1.19-R0.1-SNAPSHOT'
+    implementation project(':common')
+}

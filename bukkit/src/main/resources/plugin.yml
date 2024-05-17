@@ -1,0 +1,8 @@
+main: com.github.koxsosen.bukkit.BukkitPluginLoader
+name: SimpleVoiceBans
+api-version: 1.13
+version: 1.0-SNAPSHOT
+softdepend:
+  - LibertyBans
+depend: [ voicechat ]
+author: KoxSosen

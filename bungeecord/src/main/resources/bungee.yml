@@ -1,0 +1,5 @@
+main: com.github.koxsosen.bungee.BungeePluginLoader
+name: SimpleVoiceBans
+version: 1.0-SNAPSHOT
+depend: [ voicechat, LibertyBans ]
+author: KoxSosen
