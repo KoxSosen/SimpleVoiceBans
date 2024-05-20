@@ -4,6 +4,10 @@ import com.github.koxsosen.common.PunishmentPlayerType;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import space.arim.libertybans.api.NetworkAddress;
@@ -54,11 +58,15 @@ public class SimpleVoiceBans implements VoicechatPlugin {
                 return;
             }
 
+            BaseComponent baseComponent = new TextComponent("You are muted, you can't use voice chat!");
+            baseComponent.setColor(ChatColor.GREEN);
+
             if (BukkitPluginLoader.isIsBungee()) {
                 // If the map has the details of a player, and they are muted, cancel the event.
                 // If the response from the proxy is delayed, we may not receive it in time, so some audio on the initial check may leak thru.
                 if (getMuteCache().containsKey(Map.of(uuid, inetAddress))) {
                     if (getMuteCache().get(Map.of(uuid, inetAddress))) {
+                        sendActionBar(eventPlayer, baseComponent);
                         event.cancel();
                     }
                 } else {
@@ -73,6 +81,7 @@ public class SimpleVoiceBans implements VoicechatPlugin {
                     }
                 }).exceptionally((ex) -> null);
                 if (isMuted.get()) {
+                    sendActionBar(eventPlayer, baseComponent);
                     event.cancel();
                 }
             }
@@ -100,6 +109,12 @@ public class SimpleVoiceBans implements VoicechatPlugin {
             Bukkit.getServer().getLogger().info("Unable to close stream: " + e);
         }
 
+    }
+
+    private void sendActionBar(Player player, BaseComponent component) {
+        if (player.hasPermission("simplevoicebans.actionbar")) {
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
+        }
     }
 
 }

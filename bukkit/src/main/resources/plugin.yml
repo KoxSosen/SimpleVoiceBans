@@ -6,3 +6,7 @@ softdepend:
   - LibertyBans
 depend: [ voicechat ]
 author: KoxSosen
+permissions:
+  simplevoicebans.actionbar:
+    description: Sends an action bar if the player has the permission.
+    default: false
