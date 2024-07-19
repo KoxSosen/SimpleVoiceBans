@@ -48,7 +48,7 @@ public class VelocityPluginLoader {
     public static ProxyServer server;
     public static  Logger logger;
 
-    public static final MinecraftChannelIdentifier IDENTIFIER = MinecraftChannelIdentifier.from("simplevoicebans:custom");
+    public static final MinecraftChannelIdentifier IDENTIFIER = MinecraftChannelIdentifier.from("simplevbans:custom");
 
     @Inject
     public VelocityPluginLoader(ProxyServer server, Logger logger) {

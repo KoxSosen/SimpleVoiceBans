@@ -12,7 +12,7 @@ import java.util.Map;
 public class MessageReceiver implements PluginMessageListener {
     @Override
     public void onPluginMessageReceived(String channel, @NonNull Player player, byte[] bytes) {
-        if (!channel.equalsIgnoreCase("simplevoicebans:custom")) {
+        if (!channel.equalsIgnoreCase("simplevbans:custom")) {
             return;
         }
 

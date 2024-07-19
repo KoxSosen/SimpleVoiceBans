@@ -15,7 +15,7 @@ public class MessageReceiver implements Listener {
     @EventHandler
     @SuppressWarnings("unused")
     public void onPluginMessageReceived(PluginMessageEvent event) {
-        if (!event.getTag().equalsIgnoreCase("simplevoicebans:custom")) {
+        if (!event.getTag().equalsIgnoreCase("simplevbans:custom")) {
             return;
         }
 
@@ -67,7 +67,7 @@ public class MessageReceiver implements Listener {
             return;
         }
 
-        player.getServer().getInfo().sendData("simplevoicebans:custom", byao.toByteArray());
+        player.getServer().getInfo().sendData("simplevbans:custom", byao.toByteArray());
         try {
             byao.close();
         } catch (IOException e) {
