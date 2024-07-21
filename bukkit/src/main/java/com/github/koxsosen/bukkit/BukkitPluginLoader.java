@@ -1,5 +1,6 @@
 package com.github.koxsosen.bukkit;
 
+import com.github.koxsosen.common.LibertyBansApiHelper;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import org.bukkit.plugin.java.JavaPlugin;
 import space.arim.libertybans.api.LibertyBans;
@@ -10,9 +11,7 @@ import java.util.NoSuchElementException;
 
 public class BukkitPluginLoader extends JavaPlugin {
 
-    public static LibertyBans getApi() {
-        return api;
-    }
+    public static LibertyBansApiHelper libertyBansApiHelper;
 
     public static LibertyBans api;
 
@@ -45,6 +44,7 @@ public class BukkitPluginLoader extends JavaPlugin {
             getLogger().info("Registered the LibertyBans api.");
             getLogger().info("Since this backend server has LibertyBans installed, SimpleVoiceBans presumes that you don't have it installed on the proxy.");
             getLogger().info("Therefore we disable the proxy specific support code in SimpleVoiceBans.");
+            libertyBansApiHelper = new LibertyBansApiHelper();
         } catch (NoSuchElementException | NoClassDefFoundError ignored) {
             getLogger().info("We determined that you do not have LibertyBans installed on this backend server.");
             getLogger().info("Therefore we assume that you have it installed on the proxy.");
@@ -83,6 +83,14 @@ public class BukkitPluginLoader extends JavaPlugin {
 
     public static BukkitPluginLoader getInstance() {
         return instance;
+    }
+
+    public static LibertyBans getApi() {
+        return api;
+    }
+
+    public static LibertyBansApiHelper getLibertyBansApiHelper() {
+        return libertyBansApiHelper;
     }
 
 }

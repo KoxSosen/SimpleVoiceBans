@@ -6,6 +6,7 @@ import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import space.arim.omnibus.util.concurrent.ReactionStage;
 
 import java.io.*;
 import java.util.Optional;
@@ -46,8 +47,12 @@ public class MessageReceiver {
             return;
         }
 
-        boolean isMuted = VelocityPluginLoader.getLibertyBansApiHelper().isMuted(VelocityPluginLoader.getApi(), punishmentPlayerType);
-        sendPluginMessageToBackend(player, new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), isMuted));
+        ReactionStage<Integer> isMuted = VelocityPluginLoader.getLibertyBansApiHelper().checkMuted(VelocityPluginLoader.getApi(), punishmentPlayerType);
+        isMuted.thenAcceptAsync(mutedState -> sendPluginMessageToBackend(player, new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), mutedState)))
+                .exceptionally(ex -> {
+                    VelocityPluginLoader.getLogger().info("Unable to sent plugin message: " + ex);
+                    return null;
+                });
 
     }
 
@@ -70,9 +75,7 @@ public class MessageReceiver {
 
             player.getCurrentServer()
                     .map(ServerConnection::getServer)
-                    .ifPresent((RegisteredServer server) -> {
-                        server. sendPluginMessage(IDENTIFIER, byao.toByteArray());
-                    });
+                    .ifPresent((RegisteredServer server) -> server. sendPluginMessage(IDENTIFIER, byao.toByteArray()));
 
             try {
                 byao.close();

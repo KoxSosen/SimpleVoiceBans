@@ -7,7 +7,6 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.*;
-import java.util.Map;
 
 public class MessageReceiver implements PluginMessageListener {
     @Override
@@ -16,10 +15,10 @@ public class MessageReceiver implements PluginMessageListener {
             return;
         }
 
-        PunishmentPlayerType punishmentPlayerTypeWithResponse = null;
+        PunishmentPlayerType punishmentPlayerTypeWithResponse;
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-        ObjectInputStream objectInputStream = null;
+        ObjectInputStream objectInputStream;
         try {
             objectInputStream = new ObjectInputStream(inputStream);
             punishmentPlayerTypeWithResponse = (PunishmentPlayerType) objectInputStream.readObject();
@@ -37,8 +36,10 @@ public class MessageReceiver implements PluginMessageListener {
         }
 
         if (punishmentPlayerTypeWithResponse != null) {
-            SimpleVoiceBans.getMuteCache().put(Map.of(punishmentPlayerTypeWithResponse.getUuid(), punishmentPlayerTypeWithResponse.getInetAddress()), punishmentPlayerTypeWithResponse.getResponse());
+            SimpleVoiceBans.checkResponse(punishmentPlayerTypeWithResponse, punishmentPlayerTypeWithResponse.getState());
         }
+
     }
 
 }
+

@@ -79,6 +79,7 @@ public class VelocityPluginLoader {
     }
 
     @Subscribe
+    @SuppressWarnings("unused")
     public void onProxyShutdownEvent(ProxyShutdownEvent event) {
         getServer().getEventManager().unregisterListeners(this);
         getServer().getChannelRegistrar().unregister(IDENTIFIER);

@@ -1,5 +1,10 @@
-allprojects {
+plugins {
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+subprojects {
     apply plugin: 'java'
+    apply plugin: 'com.github.johnrengelman.shadow'
 
     version = '1.3-SNAPSHOT'
     group = 'com.github.koxsosen'
@@ -38,6 +43,17 @@ allprojects {
         from {
             configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
         }
+    }
+
+    shadowJar {
+        archiveClassifier = 'uber'
+        archiveBaseName = 'SimpleVoiceBans'
+        archiveAppendix = project.name
+        relocate 'com.github.ben-manes.caffeine', 'com.github.ben-manes.simplevbans.caffeine'
+    }
+
+    compileJava   {
+        sourceCompatibility = '17'
     }
 
 }

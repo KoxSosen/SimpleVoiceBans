@@ -6,6 +6,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import space.arim.omnibus.util.concurrent.ReactionStage;
 
 import java.io.*;
 import java.util.Collection;
@@ -43,11 +44,18 @@ public class MessageReceiver implements Listener {
             return;
         }
 
-        boolean isMuted = BungeePluginLoader.getLibertyBansApiHelper().isMuted(BungeePluginLoader.getApi(), punishmentPlayerType);
-        sendCustomDataWithResponse(player, new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), isMuted));
+        ReactionStage<Integer> isMuted = BungeePluginLoader.getLibertyBansApiHelper().checkMuted(BungeePluginLoader.getApi(), punishmentPlayerType);
+        isMuted.thenAcceptAsync(mutedState -> sendCustomDataWithResponse(player, new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), mutedState)))
+                .exceptionally(ex -> {
+                    ProxyServer.getInstance().getLogger().info("Unable to sent plugin message: " + ex);
+                    return null;
+                });
 
     }
 
+
+    // TODO: Why is the custom response implemented in the object, instead of the method?
+    // We should instead send the message independently in the stream, and don't bake it into the player response object
     public static void sendCustomDataWithResponse(ProxiedPlayer player, PunishmentPlayerType punishmentPlayerType) {
         Collection<ProxiedPlayer> networkPlayers = ProxyServer.getInstance().getPlayers();
         // perform a check to see if globally are no players
