@@ -102,7 +102,7 @@ public class SimpleVoiceBans implements VoicechatPlugin {
             return;
         }
 
-        player.sendPluginMessage(BukkitPluginLoader.getInstance(),"simplevoicebans:custom", byao.toByteArray());
+        player.sendPluginMessage(BukkitPluginLoader.getInstance(),"simplevbans:custom", byao.toByteArray());
         try {
             byao.close();
         } catch (IOException e) {
