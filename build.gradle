@@ -49,11 +49,13 @@ subprojects {
         archiveClassifier = 'uber'
         archiveBaseName = 'SimpleVoiceBans'
         archiveAppendix = project.name
-        relocate 'com.github.ben-manes.caffeine', 'com.github.ben-manes.simplevbans.caffeine'
+
+        relocate 'com.github.benmanes.caffeine.cache', 'com.github.simplevbans.benmanes.caffeine.cache'
     }
 
     compileJava   {
         sourceCompatibility = '17'
+        targetCompatibility = '17'
     }
 
 }

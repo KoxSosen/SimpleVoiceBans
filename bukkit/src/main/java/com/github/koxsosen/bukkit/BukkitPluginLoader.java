@@ -25,6 +25,12 @@ public class BukkitPluginLoader extends JavaPlugin {
 
     public static BukkitPluginLoader instance;
 
+    public static Omnibus getOmnibus() {
+        return omnibus;
+    }
+
+    public static Omnibus omnibus;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -39,12 +45,15 @@ public class BukkitPluginLoader extends JavaPlugin {
         }
 
         try {
-            Omnibus omnibus = OmnibusProvider.getOmnibus();
+            omnibus = OmnibusProvider.getOmnibus();
             api = omnibus.getRegistry().getProvider(LibertyBans.class).orElseThrow();
             getLogger().info("Registered the LibertyBans api.");
             getLogger().info("Since this backend server has LibertyBans installed, SimpleVoiceBans presumes that you don't have it installed on the proxy.");
             getLogger().info("Therefore we disable the proxy specific support code in SimpleVoiceBans.");
             libertyBansApiHelper = new LibertyBansApiHelper();
+            PunishmentListener punishmentListener = new PunishmentListener();
+            punishmentListener.listenToPostPunishEvent();
+            punishmentListener.listenToPostPardonEvent();
         } catch (NoSuchElementException | NoClassDefFoundError ignored) {
             getLogger().info("We determined that you do not have LibertyBans installed on this backend server.");
             getLogger().info("Therefore we assume that you have it installed on the proxy.");
