@@ -64,7 +64,6 @@ public class SimpleVoiceBans implements VoicechatPlugin {
 
             PunishmentPlayerType punishmentPlayerType = new PunishmentPlayerType(uuid, inetAddress);
 
-            System.out.println(getMuteCache().getIfPresent(punishmentPlayerType));
             if (getMuteCache().getIfPresent(punishmentPlayerType) != null) {
                 if (Boolean.TRUE.equals(getMuteCache().getIfPresent(punishmentPlayerType))) {
                     sendActionBar(eventPlayer, baseComponent);
