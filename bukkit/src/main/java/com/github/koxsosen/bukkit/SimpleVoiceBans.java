@@ -62,8 +62,9 @@ public class SimpleVoiceBans implements VoicechatPlugin {
             BaseComponent baseComponent = new TextComponent("You are muted, you can't use voice chat!");
             baseComponent.setColor(ChatColor.GREEN);
 
-
             PunishmentPlayerType punishmentPlayerType = new PunishmentPlayerType(uuid, inetAddress);
+
+            System.out.println(getMuteCache().getIfPresent(punishmentPlayerType));
             if (getMuteCache().getIfPresent(punishmentPlayerType) != null) {
                 if (Boolean.TRUE.equals(getMuteCache().getIfPresent(punishmentPlayerType))) {
                     sendActionBar(eventPlayer, baseComponent);
@@ -85,7 +86,6 @@ public class SimpleVoiceBans implements VoicechatPlugin {
     }
 
     private void sendCustomData(Player player, PunishmentPlayerType punishmentPlayerType) {
-
         ByteArrayOutputStream byao = new ByteArrayOutputStream();
         ObjectOutputStream outputStream;
         try {
@@ -97,8 +97,7 @@ public class SimpleVoiceBans implements VoicechatPlugin {
             Bukkit.getServer().getLogger().info("Unable to serialize: " + e);
             return;
         }
-
-        player.sendPluginMessage(BukkitPluginLoader.getInstance(),"simplevbans:custom", byao.toByteArray());
+        Bukkit.getServer().sendPluginMessage(BukkitPluginLoader.getInstance(), "simplevbans:main", byao.toByteArray());
         try {
             byao.close();
         } catch (IOException e) {

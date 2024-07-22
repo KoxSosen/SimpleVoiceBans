@@ -15,7 +15,7 @@ import space.arim.omnibus.OmnibusProvider;
 
 import java.util.NoSuchElementException;
 
-@Plugin(id = "simplevoicebans", name = "SimpleVoiceBans", version = "0.1.0-SNAPSHOT", authors = {"KoxSosen"})
+@Plugin(id = "simplevoicebans", name = "SimpleVoiceBans", version = "1.3-SNAPSHOT", authors = {"KoxSosen"})
 
 public class VelocityPluginLoader {
 
@@ -48,7 +48,7 @@ public class VelocityPluginLoader {
     public static ProxyServer server;
     public static  Logger logger;
 
-    public static final MinecraftChannelIdentifier IDENTIFIER = MinecraftChannelIdentifier.from("simplevbans:custom");
+    public static final MinecraftChannelIdentifier IDENTIFIER = MinecraftChannelIdentifier.from("simplevbans:main");
 
     @Inject
     public VelocityPluginLoader(ProxyServer server, Logger logger) {
@@ -76,6 +76,7 @@ public class VelocityPluginLoader {
         getLogger().info("Make sure you have SimpleVoiceChat, and SimpleVoiceBans installed on all backend servers.");
 
         getServer().getChannelRegistrar().register(IDENTIFIER);
+        server.getEventManager().register(this, new MessageReceiver());
     }
 
     @Subscribe

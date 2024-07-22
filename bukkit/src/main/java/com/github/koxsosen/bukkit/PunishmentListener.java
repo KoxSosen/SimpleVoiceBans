@@ -18,7 +18,7 @@ public class PunishmentListener {
                     if (event.getTarget().isPresent()) {
                         if (server.getPlayer(event.getTarget().get()) != null) {
                             PunishmentPlayerType type = new PunishmentPlayerType(server.getPlayer(event.getTarget().get()).getUniqueId(), server.getPlayer(event.getTarget().get()).getAddress().getAddress());
-                            SimpleVoiceBans.getMuteCache().put(type, false);
+                            SimpleVoiceBans.getMuteCache().put(type, true);
                         }
                     }
                 }

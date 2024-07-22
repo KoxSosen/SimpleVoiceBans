@@ -16,7 +16,7 @@ public class PunishmentListener {
                     ProxyServer proxyServer = VelocityPluginLoader.getServer();
                     if (proxyServer.getPlayer(event.getTarget().get()).isPresent()) {
                         PunishmentPlayerType type = new PunishmentPlayerType(proxyServer.getPlayer(event.getTarget().get()).get().getUniqueId(), proxyServer.getPlayer(event.getTarget().get()).get().getRemoteAddress().getAddress());
-                        MessageReceiver.sendPluginMessageToBackend(proxyServer.getPlayer(event.getTarget().get()).get(), new PunishmentPlayerType(type.getUuid(), type.getInetAddress(), 0));
+                        MessageReceiver.sendPluginMessageToBackendUsingPlayer(proxyServer.getPlayer(event.getTarget().get()).get(), new PunishmentPlayerType(type.getUuid(), type.getInetAddress(), 1));
                     }
                 }
             }
@@ -31,7 +31,7 @@ public class PunishmentListener {
                     ProxyServer proxyServer = VelocityPluginLoader.getServer();
                     if (proxyServer.getPlayer(event.getTarget().get()).isPresent()) {
                         PunishmentPlayerType type = new PunishmentPlayerType(proxyServer.getPlayer(event.getTarget().get()).get().getUniqueId(), proxyServer.getPlayer(event.getTarget().get()).get().getRemoteAddress().getAddress());
-                        MessageReceiver.sendPluginMessageToBackend(proxyServer.getPlayer(event.getTarget().get()).get(), new PunishmentPlayerType(type.getUuid(), type.getInetAddress(), 1));
+                        MessageReceiver.sendPluginMessageToBackendUsingPlayer(proxyServer.getPlayer(event.getTarget().get()).get(), new PunishmentPlayerType(type.getUuid(), type.getInetAddress(), 0));
                     }
                 }
             }

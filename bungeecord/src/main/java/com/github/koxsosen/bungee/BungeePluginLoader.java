@@ -42,14 +42,14 @@ public class BungeePluginLoader extends Plugin {
         getLogger().info("Loaded SimpleVoiceBans.");
         getLogger().info("Make sure you have SimpleVoiceChat, and SimpleVoiceBans installed on all backend servers.");
 
-        getProxy().registerChannel("simplevbans:custom");
+        getProxy().registerChannel("simplevbans:main");
         getProxy().getPluginManager().registerListener(this, new MessageReceiver());
     }
 
     @Override
     public void onDisable() {
         getProxy().getPluginManager().unregisterListeners(this);
-        getProxy().unregisterChannel("simplevbans:custom");
+        getProxy().unregisterChannel("simplevbans:main");
     }
 
     public static LibertyBansApiHelper getLibertyBansApiHelper() {

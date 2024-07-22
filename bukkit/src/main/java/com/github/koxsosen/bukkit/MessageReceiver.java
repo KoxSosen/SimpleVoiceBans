@@ -11,7 +11,11 @@ import java.io.*;
 public class MessageReceiver implements PluginMessageListener {
     @Override
     public void onPluginMessageReceived(String channel, @NonNull Player player, byte[] bytes) {
-        if (!channel.equalsIgnoreCase("simplevbans:custom")) {
+        if (!channel.equals("simplevbans:main")) {
+            return;
+        }
+
+        if (!Bukkit.getOnlinePlayers().contains(player)) {
             return;
         }
 
@@ -36,7 +40,7 @@ public class MessageReceiver implements PluginMessageListener {
         }
 
         if (punishmentPlayerTypeWithResponse != null) {
-            SimpleVoiceBans.checkResponse(punishmentPlayerTypeWithResponse, punishmentPlayerTypeWithResponse.getState());
+            SimpleVoiceBans.checkResponse(new PunishmentPlayerType(punishmentPlayerTypeWithResponse.getUuid(), punishmentPlayerTypeWithResponse.getInetAddress()), punishmentPlayerTypeWithResponse.getState());
         }
 
     }

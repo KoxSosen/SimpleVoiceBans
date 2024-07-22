@@ -62,9 +62,9 @@ public class BukkitPluginLoader extends JavaPlugin {
             if (isBungee) {
                 getLogger().info("This server is proxied.");
                 // We need this channel to be able to send the request.
-                getServer().getMessenger().registerOutgoingPluginChannel(this, "simplevbans:custom");
+                getServer().getMessenger().registerOutgoingPluginChannel(this, "simplevbans:main");
                 // We need this channel to be able to receive the response.
-                getServer().getMessenger().registerIncomingPluginChannel( this, "simplevbans:custom", new MessageReceiver());
+                getServer().getMessenger().registerIncomingPluginChannel( this, "simplevbans:main", new MessageReceiver());
             } else {
                 getLogger().info("This server is not proxied.");
                 getLogger().info("SimpleVoiceBans without LibertyBans installed requires a proxied backend server.");

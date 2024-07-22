@@ -5,7 +5,6 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
 import space.arim.omnibus.util.concurrent.ReactionStage;
 
 import java.io.*;
@@ -15,14 +14,13 @@ import static com.github.koxsosen.velocity.VelocityPluginLoader.IDENTIFIER;
 
 public class MessageReceiver {
 
-    @Subscribe
     @SuppressWarnings("unused")
+    @Subscribe
     public void onPluginMessageFromBackend(PluginMessageEvent event) {
-
-        if (!(event.getSource() instanceof Player player)) {
+        if (!(event.getSource() instanceof ServerConnection)) {
             return;
         }
-
+        ServerConnection backend = (ServerConnection) event.getSource();
         if (event.getIdentifier() != IDENTIFIER) {
             return;
         }
@@ -48,7 +46,7 @@ public class MessageReceiver {
         }
 
         ReactionStage<Integer> isMuted = VelocityPluginLoader.getLibertyBansApiHelper().checkMuted(VelocityPluginLoader.getApi(), punishmentPlayerType);
-        isMuted.thenAcceptAsync(mutedState -> sendPluginMessageToBackend(player, new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), mutedState)))
+        isMuted.thenAcceptAsync(mutedState -> sendPluginMessageToBackendUsingPlayer(backend.getPlayer(), new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), mutedState)))
                 .exceptionally(ex -> {
                     VelocityPluginLoader.getLogger().info("Unable to sent plugin message: " + ex);
                     return null;
@@ -56,9 +54,8 @@ public class MessageReceiver {
 
     }
 
-    public static void sendPluginMessageToBackend(Player player, PunishmentPlayerType punishmentPlayerType) {
+    public static void sendPluginMessageToBackendUsingPlayer(Player player, PunishmentPlayerType punishmentPlayerType) {
         Optional<ServerConnection> connection = player.getCurrentServer();
-
         if (connection.isPresent()) {
             ByteArrayOutputStream byao = new ByteArrayOutputStream();
             ObjectOutputStream outputStream;
@@ -72,11 +69,7 @@ public class MessageReceiver {
                 return;
             }
 
-
-            player.getCurrentServer()
-                    .map(ServerConnection::getServer)
-                    .ifPresent((RegisteredServer server) -> server. sendPluginMessage(IDENTIFIER, byao.toByteArray()));
-
+            connection.get().sendPluginMessage(IDENTIFIER, byao.toByteArray());
             try {
                 byao.close();
             } catch (IOException e) {

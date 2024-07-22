@@ -3,6 +3,7 @@ package com.github.koxsosen.bungee;
 import com.github.koxsosen.common.PunishmentPlayerType;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -16,7 +17,7 @@ public class MessageReceiver implements Listener {
     @EventHandler
     @SuppressWarnings("unused")
     public void onPluginMessageReceived(PluginMessageEvent event) {
-        if (!event.getTag().equalsIgnoreCase("simplevbans:custom")) {
+        if (!event.getTag().equalsIgnoreCase("simplevbans:main")) {
             return;
         }
 
@@ -47,7 +48,7 @@ public class MessageReceiver implements Listener {
         ReactionStage<Integer> isMuted = BungeePluginLoader.getLibertyBansApiHelper().checkMuted(BungeePluginLoader.getApi(), punishmentPlayerType);
         isMuted.thenAcceptAsync(mutedState -> sendCustomDataWithResponse(player, new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress(), mutedState)))
                 .exceptionally(ex -> {
-                    ProxyServer.getInstance().getLogger().info("Unable to sent plugin message: " + ex);
+                    ProxyServer.getInstance().getLogger().info("Unable to send plugin message: " + ex);
                     return null;
                 });
 
@@ -75,7 +76,7 @@ public class MessageReceiver implements Listener {
             return;
         }
 
-        player.getServer().getInfo().sendData("simplevbans:custom", byao.toByteArray());
+        player.getServer().getInfo().sendData("simplevbans:main", byao.toByteArray());
         try {
             byao.close();
         } catch (IOException e) {

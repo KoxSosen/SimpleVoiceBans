@@ -17,7 +17,7 @@ public class PunishmentListener {
                     ProxyServer proxyServer = ProxyServer.getInstance();
                     if (proxyServer.getPlayer(event.getTarget().get()).getUniqueId() != null) {
                         PunishmentPlayerType type = new PunishmentPlayerType(proxyServer.getPlayer(event.getTarget().get()).getUniqueId(), proxyServer.getPlayer(event.getTarget().get()).getAddress().getAddress());
-                        MessageReceiver.sendCustomDataWithResponse(proxyServer.getPlayer(event.getTarget().get()), new PunishmentPlayerType(type.getUuid(), type.getInetAddress(), 0));
+                        MessageReceiver.sendCustomDataWithResponse(proxyServer.getPlayer(event.getTarget().get()), new PunishmentPlayerType(type.getUuid(), type.getInetAddress(), 1));
                     }
                 }
             }
@@ -32,7 +32,7 @@ public class PunishmentListener {
                     ProxyServer proxyServer = ProxyServer.getInstance();
                     if (proxyServer.getPlayer(event.getTarget().get()).getUniqueId() != null) {
                         PunishmentPlayerType type = new PunishmentPlayerType(proxyServer.getPlayer(event.getTarget().get()).getUniqueId(), proxyServer.getPlayer(event.getTarget().get()).getAddress().getAddress());
-                        MessageReceiver.sendCustomDataWithResponse(proxyServer.getPlayer(event.getTarget().get()), new PunishmentPlayerType(type.getUuid(), type.getInetAddress(), 1));
+                        MessageReceiver.sendCustomDataWithResponse(proxyServer.getPlayer(event.getTarget().get()), new PunishmentPlayerType(type.getUuid(), type.getInetAddress(), 0));
                     }
                 }
             }

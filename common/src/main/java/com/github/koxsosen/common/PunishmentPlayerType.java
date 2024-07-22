@@ -60,13 +60,4 @@ public final class PunishmentPlayerType implements Serializable {
     public int hashCode() {
         return Objects.hash(getUuid(), getInetAddress(), getState());
     }
-
-    @Override
-    public String toString() {
-        return "PunishmentPlayerType{" +
-                "uuid=" + uuid +
-                ", inetAddress=" + inetAddress +
-                ", state=" + state +
-                '}';
-    }
 }
