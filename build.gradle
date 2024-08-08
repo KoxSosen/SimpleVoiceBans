@@ -51,6 +51,7 @@ subprojects {
         archiveAppendix = project.name
 
         relocate 'com.github.benmanes.caffeine.cache', 'com.github.simplevbans.benmanes.caffeine.cache'
+        relocate 'space.arim.morepaperlib', 'space.arim.simplevbans.morepaperlib'
     }
 
 

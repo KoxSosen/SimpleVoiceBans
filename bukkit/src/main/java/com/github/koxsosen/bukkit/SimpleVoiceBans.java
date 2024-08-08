@@ -71,7 +71,7 @@ public class SimpleVoiceBans implements VoicechatPlugin {
                 }
             } else {
                 if (BukkitPluginLoader.isIsBungee()) {
-                    Bukkit.getScheduler().runTaskAsynchronously(BukkitPluginLoader.getInstance(), () -> sendCustomData(eventPlayer, new PunishmentPlayerType(uuid, inetAddress)));
+                    BukkitPluginLoader.getMorePaperLib().scheduling().asyncScheduler().run(() -> sendCustomData(eventPlayer, new PunishmentPlayerType(uuid, inetAddress)));
                 } else {
                     ReactionStage<Integer> isMuted = BukkitPluginLoader.getLibertyBansApiHelper().checkMuted(BukkitPluginLoader.getApi(), punishmentPlayerType);
                     isMuted.thenAcceptAsync(mutedState -> checkResponse(punishmentPlayerType, mutedState))

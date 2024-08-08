@@ -4,6 +4,7 @@ import com.github.koxsosen.common.LibertyBansApiHelper;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import org.bukkit.plugin.java.JavaPlugin;
 import space.arim.libertybans.api.LibertyBans;
+import space.arim.morepaperlib.MorePaperLib;
 import space.arim.omnibus.Omnibus;
 import space.arim.omnibus.OmnibusProvider;
 
@@ -20,6 +21,12 @@ public class BukkitPluginLoader extends JavaPlugin {
     }
 
     public static boolean isBungee = false;
+
+    public static MorePaperLib getMorePaperLib() {
+        return morePaperLib;
+    }
+
+    public static MorePaperLib morePaperLib;
 
     private SimpleVoiceBans simpleVoiceBans;
 
@@ -54,6 +61,7 @@ public class BukkitPluginLoader extends JavaPlugin {
             PunishmentListener punishmentListener = new PunishmentListener();
             punishmentListener.listenToPostPunishEvent();
             punishmentListener.listenToPostPardonEvent();
+            morePaperLib = new MorePaperLib(getInstance());
         } catch (NoSuchElementException | NoClassDefFoundError ignored) {
             getLogger().info("We determined that you do not have LibertyBans installed on this backend server.");
             getLogger().info("Therefore we assume that you have it installed on the proxy.");
