@@ -100,4 +100,12 @@ public interface AbstractPlatform {
         sendToAbstractLogger("Cache access without proper cache implementation.");
     }
 
+    /**
+     * Verifies whether the incoming plugin message is from a source we expected.
+     * @return Whether the incoming plugin message source is expected, or not.
+     */
+    default boolean verifyAbstractSource(Object source) {
+        return false;
+    }
+
 }

@@ -3,6 +3,7 @@ package com.github.koxsosen.bukkit;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.koxsosen.common.PunishmentPlayerType;
+import com.github.koxsosen.common.abstraction.Constants;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
@@ -18,6 +19,8 @@ import java.net.InetAddress;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import static com.github.koxsosen.bukkit.BukkitPluginLoader.*;
 
 public class SimpleVoiceBans implements VoicechatPlugin {
 
@@ -73,7 +76,7 @@ public class SimpleVoiceBans implements VoicechatPlugin {
                     ReactionStage<Integer> isMuted = BukkitPluginLoader.getLibertyBansApiHelper().checkMuted(BukkitPluginLoader.getApi(), punishmentPlayerType);
                     isMuted.thenAcceptAsync(mutedState -> checkResponse(punishmentPlayerType, mutedState))
                             .exceptionally(ex -> {
-                                Bukkit.getLogger().info("Unable to determine weather player is muted or not: " + ex);
+                                getPluginLogger().info(Constants.getErrMute() + ex);
                                 return null;
                             });
                 }

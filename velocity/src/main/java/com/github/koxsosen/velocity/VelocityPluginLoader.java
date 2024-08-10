@@ -2,7 +2,9 @@ package com.github.koxsosen.velocity;
 
 import com.github.koxsosen.common.LibertyBansApiHelper;
 import com.github.koxsosen.common.abstraction.AbstractPlatform;
+import com.github.koxsosen.common.abstraction.Constants;
 import com.github.koxsosen.common.abstraction.MessageSender;
+import com.github.koxsosen.common.abstraction.ServerType;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -18,6 +20,7 @@ import space.arim.libertybans.api.LibertyBans;
 import space.arim.omnibus.Omnibus;
 import space.arim.omnibus.OmnibusProvider;
 
+import java.net.InetAddress;
 import java.util.*;
 
 @Plugin(id = "simplevoicebans", name = "SimpleVoiceBans", version = "1.4-SNAPSHOT", authors = {"KoxSosen"})
@@ -66,7 +69,7 @@ public class VelocityPluginLoader implements AbstractPlatform {
 
     private static  Logger logger;
 
-    public static final MinecraftChannelIdentifier IDENTIFIER = MinecraftChannelIdentifier.from("simplevbans:main");
+    public static final MinecraftChannelIdentifier IDENTIFIER = MinecraftChannelIdentifier.from(Constants.getChannelIdentifier());
 
     @Inject
     public VelocityPluginLoader(ProxyServer server, Logger logger) {
@@ -80,23 +83,19 @@ public class VelocityPluginLoader implements AbstractPlatform {
         try {
             omnibus = OmnibusProvider.getOmnibus();
             api = omnibus.getRegistry().getProvider(LibertyBans.class).orElseThrow();
-            PunishmentListener punishmentListener = new PunishmentListener();
-            punishmentListener.listenToPostPunishEvent();
-            punishmentListener.listenToPostPardonEvent();
         } catch (NoSuchElementException | NoClassDefFoundError ignored) {
-            logger.info("SimpleVoiceBans on the proxy requires LibertyBans to be installed too.");
-            logger.info("Install LibertyBans on the proxy, as well as SimpleVoiceChat and SimpleVoiceBans on all backends, and the proxy.");
-            server.getEventManager().unregisterListeners(this);
+            getLogger().info(Constants.getChannelIdentifier());
+            getServer().getEventManager().unregisterListeners(this);
         }
 
         libertyBansApiHelper = new LibertyBansApiHelper();
         messageSender = new MessageSender();
         platform = new VelocityPluginLoader(getServer(), getLogger());
-        getLogger().info("Loaded SimpleVoiceBans.");
-        getLogger().info("Make sure you have SimpleVoiceChat, and SimpleVoiceBans installed on all backend servers.");
+        getLibertyBansApiHelper().listenToPunishmentEvents(getPlatform(), getMessageSender());
+        getLogger().info(Constants.getMsgLoaded());
 
         getServer().getChannelRegistrar().register(IDENTIFIER);
-        server.getEventManager().register(this, new MessageReceiver());
+        getServer().getEventManager().register(this, new MessageReceiver());
     }
 
     @Subscribe
@@ -122,11 +121,23 @@ public class VelocityPluginLoader implements AbstractPlatform {
     }
 
     @Override
+    public UUID getAbstractPlayerUUID(Object player) {
+        Player player1 = (Player) player;
+        return player1.getUniqueId();
+    }
+
+    @Override
+    public InetAddress getAbstractPlayerInetAddress(Object player) {
+        Player player1 = (Player) player;
+        return player1.getRemoteAddress().getAddress();
+    }
+
+    @Override
     public void getAbstractPluginMessaging(UUID player, String identifier, byte[] data) {
         if (getServer().getPlayer(player).isPresent()) {
             Optional<ServerConnection> connection = getServer().getPlayer(player).get().getCurrentServer();
             if (connection.isPresent()) {
-                connection.map(ServerConnection::getServer).ifPresent((RegisteredServer server) -> server.sendPluginMessage(() -> "simplevbans:main", data));
+                connection.map(ServerConnection::getServer).ifPresent((RegisteredServer server) -> server.sendPluginMessage(Constants::getChannelIdentifier, data));
             }
         }
     }
@@ -141,7 +152,6 @@ public class VelocityPluginLoader implements AbstractPlatform {
         return null;
     }
 
-    // TODO: Find out if there is a common logging level implementation across platforms somehow.
     @Override
     public void sendToAbstractLogger(String data) {
         getLogger().info(data);
@@ -164,5 +174,19 @@ public class VelocityPluginLoader implements AbstractPlatform {
         return players.size();
     }
 
+    @Override
+    public Omnibus getAbstractOmnibus() {
+        return getOmnibus();
+    }
+
+    @Override
+    public ServerType getAbstractServerType() {
+        return ServerType.PROXY;
+    }
+
+    @Override
+    public boolean verifyAbstractSource(Object source) {
+        return source instanceof ServerConnection;
+    }
 
 }

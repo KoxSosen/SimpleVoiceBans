@@ -1,6 +1,8 @@
 package com.github.koxsosen.common;
 
 import com.github.koxsosen.common.abstraction.AbstractPlatform;
+import com.github.koxsosen.common.abstraction.Constants;
+import com.github.koxsosen.common.abstraction.MessageSender;
 import space.arim.libertybans.api.LibertyBans;
 import space.arim.libertybans.api.NetworkAddress;
 import space.arim.libertybans.api.PunishmentType;
@@ -18,48 +20,49 @@ public class LibertyBansApiHelper {
     public ReactionStage<Integer> checkMuted(LibertyBans api, PunishmentPlayerType punishmentPlayerType) {
         ReactionStage<Optional<Punishment>> mutes = api.getSelector().getCachedMute(punishmentPlayerType.getUuid(), NetworkAddress.of(punishmentPlayerType.getInetAddress()));
         return mutes.thenApplyAsync((Optional::isPresent)).thenApply((value) -> value ? 1 : 0).exceptionally((ex) -> {
-            System.out.println("Finding out the mutes has completed exceptionally: " + ex.getMessage());
+            System.out.println(Constants.getErrMute() + ex.getMessage());
             return 3;
         });
     }
 
-    public void listenToPostPardonEvent(AbstractPlatform platform) {
-        EventConsumer<PostPardonEvent> listener = event -> {
+    public void listenToPunishmentEvents(AbstractPlatform platform, MessageSender messageSender) {
+        EventConsumer<PostPardonEvent> postPardonEventEventConsumer = event -> {
             if (event.getPunishment().getType().equals(PunishmentType.MUTE)) {
                 if (event.getTarget().isPresent()) {
                     String playerName = event.getTarget().get();
                     if (platform.getAbstractServer() != null) {
                         if (platform.getAbstractPlayerByName(playerName) != null) {
-                            PunishmentPlayerType type = new PunishmentPlayerType(platform.getAbstractPlayerUUID(playerName), platform.getAbstractPlayerInetAddress(playerName));
+                            PunishmentPlayerType type = new PunishmentPlayerType(platform.getAbstractPlayerUUID(playerName), platform.getAbstractPlayerInetAddress(playerName), 1);
                             switch (platform.getAbstractServerType()) {
                                 case BACKEND -> platform.addToAbstractServerCache(type, false);
-                                case PROXY -> platform.getAbstractPluginMessaging();
+                                case PROXY -> messageSender.sendPluginMessage(platform.getAbstractPlayerUUID(platform.getAbstractPlayerByName(playerName)), platform, type);
                             }
-                            SimpleVoiceBans.getMuteCache().put(type, false);
                         }
                     }
 
                 }
             }
         };
-        platform.getAbstractOmnibus().getEventBus().registerListener(PostPardonEvent.class, ListenerPriorities.NORMAL, listener);
-    }
+        platform.getAbstractOmnibus().getEventBus().registerListener(PostPardonEvent.class, ListenerPriorities.NORMAL, postPardonEventEventConsumer);
 
-    public void listenToPostPunishEvent(AbstractPlatform platform) {
-        EventConsumer<PostPunishEvent> listener = event -> {
+        EventConsumer<PostPunishEvent> postPunishEventEventConsumer = event -> {
             if (event.getPunishment().getType().equals(PunishmentType.MUTE)) {
                 if (event.getTarget().isPresent()) {
-                    Server server = Bukkit.getServer();
-                    if (event.getTarget().isPresent()) {
-                        if (server.getPlayer(event.getTarget().get()) != null) {
-                            PunishmentPlayerType type = new PunishmentPlayerType(server.getPlayer(event.getTarget().get()).getUniqueId(), server.getPlayer(event.getTarget().get()).getAddress().getAddress());
-                            SimpleVoiceBans.getMuteCache().put(type, true);
+                    String playerName = event.getTarget().get();
+                    if (platform.getAbstractServer() != null) {
+                        if (platform.getAbstractPlayerByName(playerName) != null) {
+                            PunishmentPlayerType type = new PunishmentPlayerType(platform.getAbstractPlayerUUID(playerName), platform.getAbstractPlayerInetAddress(playerName), 1);
+                            switch (platform.getAbstractServerType()) {
+                                case BACKEND -> platform.addToAbstractServerCache(type, true);
+                                case PROXY -> messageSender.sendPluginMessage(platform.getAbstractPlayerUUID(platform.getAbstractPlayerByName(playerName)), platform, type);
+                            }
                         }
                     }
+
                 }
             }
         };
-        platform.getAbstractOmnibus().getEventBus().registerListener(PostPunishEvent.class, ListenerPriorities.NORMAL, listener);
+        platform.getAbstractOmnibus().getEventBus().registerListener(PostPunishEvent.class, ListenerPriorities.NORMAL, postPunishEventEventConsumer);
     }
 
 }

@@ -2,7 +2,9 @@ package com.github.koxsosen.bungee;
 
 import com.github.koxsosen.common.LibertyBansApiHelper;
 import com.github.koxsosen.common.abstraction.AbstractPlatform;
+import com.github.koxsosen.common.abstraction.Constants;
 import com.github.koxsosen.common.abstraction.MessageSender;
+import com.github.koxsosen.common.abstraction.ServerType;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -10,11 +12,17 @@ import space.arim.libertybans.api.LibertyBans;
 import space.arim.omnibus.Omnibus;
 import space.arim.omnibus.OmnibusProvider;
 
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class BungeePluginLoader extends Plugin implements AbstractPlatform {
+
+    public static LibertyBansApiHelper getLibertyBansApiHelper() {
+        return libertyBansApiHelper;
+    }
 
     public static LibertyBansApiHelper libertyBansApiHelper;
 
@@ -22,50 +30,57 @@ public class BungeePluginLoader extends Plugin implements AbstractPlatform {
         return api;
     }
 
-    public static LibertyBans api;
+    private static LibertyBans api;
 
     public static Omnibus getOmnibus() {
         return omnibus;
     }
 
-    public static Omnibus omnibus;
+    private static Omnibus omnibus;
 
-    public static MessageSender messageSender;
+    public static AbstractPlatform getPlatform() {
+        return platform;
+    }
 
-    public static AbstractPlatform platform;
+    public static MessageSender getMessageSender() {
+        return messageSender;
+    }
+
+    private static MessageSender messageSender;
+
+    private static AbstractPlatform platform;
+
+    public static Logger getPluginLogger() {
+        return logger;
+    }
+
+    private static Logger logger;
 
     @Override
     public void onEnable() {
+        logger = ProxyServer.getInstance().getLogger();
         try {
             omnibus = OmnibusProvider.getOmnibus();
             api = omnibus.getRegistry().getProvider(LibertyBans.class).orElseThrow();
-            PunishmentListener punishmentListener = new PunishmentListener();
-            punishmentListener.listenToPostPunishEvent();
-            punishmentListener.listenToPostPardonEvent();
         } catch (NoSuchElementException | NoClassDefFoundError ignored) {
-            getLogger().info("SimpleVoiceBans on the proxy requires LibertyBans to be installed too.");
-            getLogger().info("Install LibertyBans on the proxy, as well as SimpleVoiceChat and SimpleVoiceBans on all backends, and the proxy.");
+            getPluginLogger().info(Constants.getMsgProxyRequirement());
             getProxy().getPluginManager().unregisterListeners(this);
         }
 
         libertyBansApiHelper = new LibertyBansApiHelper();
-        getLogger().info("Loaded SimpleVoiceBans.");
-        getLogger().info("Make sure you have SimpleVoiceChat, and SimpleVoiceBans installed on all backend servers.");
+        getPluginLogger().info(Constants.getMsgLoaded());
 
-        getProxy().registerChannel("simplevbans:main");
+        getProxy().registerChannel(Constants.getChannelIdentifier());
         getProxy().getPluginManager().registerListener(this, new MessageReceiver());
         messageSender = new MessageSender();
         platform = new BungeePluginLoader();
+        getLibertyBansApiHelper().listenToPunishmentEvents(getPlatform(), getMessageSender());
     }
 
     @Override
     public void onDisable() {
         getProxy().getPluginManager().unregisterListeners(this);
-        getProxy().unregisterChannel("simplevbans:main");
-    }
-
-    public static LibertyBansApiHelper getLibertyBansApiHelper() {
-        return libertyBansApiHelper;
+        getProxy().unregisterChannel(Constants.getChannelIdentifier());
     }
 
     @Override
@@ -81,6 +96,18 @@ public class BungeePluginLoader extends Plugin implements AbstractPlatform {
     @Override
     public Object getAbstractPlayerByName(String name) {
         return ProxyServer.getInstance().getPlayer(name);
+    }
+
+    @Override
+    public UUID getAbstractPlayerUUID(Object player) {
+        ProxiedPlayer player1 = (ProxiedPlayer) player;
+        return player1.getUniqueId();
+    }
+
+    @Override
+    public InetAddress getAbstractPlayerInetAddress(Object player) {
+        ProxiedPlayer player1 = (ProxiedPlayer) player;
+        return player1.getAddress().getAddress();
     }
 
     @Override
@@ -106,4 +133,20 @@ public class BungeePluginLoader extends Plugin implements AbstractPlatform {
         }
         return serverPlayers.size();
     }
+
+    @Override
+    public Omnibus getAbstractOmnibus() {
+        return getOmnibus();
+    }
+
+    @Override
+    public ServerType getAbstractServerType() {
+        return ServerType.PROXY;
+    }
+
+    @Override
+    public boolean verifyAbstractSource(Object source) {
+        return source instanceof ProxiedPlayer;
+    }
+
 }
