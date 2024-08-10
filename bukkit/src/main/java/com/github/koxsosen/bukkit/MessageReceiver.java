@@ -17,6 +17,7 @@ public class MessageReceiver implements PluginMessageListener {
 
         if (punishmentPlayerType != null) {
             SimpleVoiceBans.checkResponse(new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress()), punishmentPlayerType.getState());
+            SimpleVoiceBans.getUuidSet().remove(punishmentPlayerType.getUuid());
         } else {
             getPluginLogger().info(Constants.getErrSpoofingAttempt() + player);
         }

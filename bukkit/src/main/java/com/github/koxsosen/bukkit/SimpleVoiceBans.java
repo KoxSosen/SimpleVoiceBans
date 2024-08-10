@@ -11,13 +11,14 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import space.arim.omnibus.util.concurrent.ReactionStage;
 
 import java.net.InetAddress;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.koxsosen.bukkit.BukkitPluginLoader.*;
@@ -28,10 +29,16 @@ public class SimpleVoiceBans implements VoicechatPlugin {
         return muteCache;
     }
 
-    public static Cache<PunishmentPlayerType, Boolean> muteCache = Caffeine.newBuilder()
+    private static final Cache<PunishmentPlayerType, Boolean> muteCache = Caffeine.newBuilder()
             .expireAfterWrite(10, TimeUnit.MINUTES)
             .maximumSize(10_1000)
             .build();
+
+    public static Set<UUID> getUuidSet() {
+        return uuidSet;
+    }
+
+    private static final Set<UUID> uuidSet = ConcurrentHashMap.newKeySet();
 
     @Override
     public String getPluginId() {
@@ -70,15 +77,18 @@ public class SimpleVoiceBans implements VoicechatPlugin {
                     event.cancel();
                 }
             } else {
-                if (BukkitPluginLoader.isIsBungee()) {
-                    BukkitPluginLoader.getMorePaperLib().scheduling().asyncScheduler().run(() -> BukkitPluginLoader.getMessageSender().sendPluginMessage(eventPlayer.getUniqueId(), BukkitPluginLoader.getPlatform(), new PunishmentPlayerType(uuid, inetAddress)));
+                if (isIsBungee()) {
+                    if (!getUuidSet().contains(eventPlayer.getUniqueId())) {
+                        getMorePaperLib().scheduling().asyncScheduler().run((scheduledTask) -> getMessageSender().sendPluginMessage(eventPlayer.getUniqueId(), getPlatform(), new PunishmentPlayerType(uuid, inetAddress)));
+                    }
+                    getUuidSet().add(eventPlayer.getUniqueId());
                 } else {
-                    ReactionStage<Integer> isMuted = BukkitPluginLoader.getLibertyBansApiHelper().checkMuted(BukkitPluginLoader.getApi(), punishmentPlayerType);
-                    isMuted.thenAcceptAsync(mutedState -> checkResponse(punishmentPlayerType, mutedState))
-                            .exceptionally(ex -> {
-                                getPluginLogger().info(Constants.getErrMute() + ex);
-                                return null;
-                            });
+                        ReactionStage<Integer> isMuted = getLibertyBansApiHelper().checkMuted(getApi(), punishmentPlayerType);
+                        isMuted.thenAcceptAsync(mutedState -> checkResponse(punishmentPlayerType, mutedState))
+                                .exceptionally(ex -> {
+                                    getPluginLogger().info(Constants.getErrMute() + ex);
+                                    return null;
+                                });
                 }
             }
         }
@@ -105,7 +115,7 @@ public class SimpleVoiceBans implements VoicechatPlugin {
                 if (SimpleVoiceBans.getMuteCache().getIfPresent(punishmentPlayerType) != null) {
                     SimpleVoiceBans.getMuteCache().invalidate(punishmentPlayerType);
                 }
-                Bukkit.getServer().getLogger().info("Something went wrong with determining the muted state on the proxy.");
+                getPluginLogger().info(Constants.getErrMute());
                 break;
         }
     }
