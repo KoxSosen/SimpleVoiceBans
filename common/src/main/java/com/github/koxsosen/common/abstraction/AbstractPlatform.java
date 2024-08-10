@@ -1,5 +1,9 @@
 package com.github.koxsosen.common.abstraction;
 
+import com.github.koxsosen.common.PunishmentPlayerType;
+import space.arim.omnibus.Omnibus;
+
+import java.net.InetAddress;
 import java.util.UUID;
 
 public interface AbstractPlatform {
@@ -24,6 +28,20 @@ public interface AbstractPlatform {
      * @return The player object.
      */
     Object getAbstractPlayerByName(String name);
+
+    /**
+     * Gets the player's UUID on their respective platform.
+     * @param player
+     * @return The supplied player object's UUID.
+     */
+    UUID getAbstractPlayerUUID(Object player);
+
+    /**
+     * Gets the player's InetAddress on their respective platform.
+     * @param player
+     * @return The supplied player object's InetAddress.
+     */
+    InetAddress getAbstractPlayerInetAddress(Object player);
 
     /**
      * Implements plugin messaging on all respective platforms. Additionally, this method's
@@ -58,5 +76,28 @@ public interface AbstractPlatform {
      * @return The amount of players connected to the same server as the player is connected to.
      */
     int getConnectedPlayers(UUID player);
+
+    /**
+     * The Omnibus instance for the respective platform.
+     * @return The omnibus instance for the platform.
+     */
+    Omnibus getAbstractOmnibus();
+
+    /**
+     * This enum represents the
+     * @return The omnibus instance for the platform.
+     * @see ServerType
+     */
+    ServerType getAbstractServerType();
+
+    /**
+     * This method is only available when dealing with {@link ServerType#BACKEND} servers.
+     * So on every other platform this should basically not to anything.
+     *
+     * @see ServerType
+     */
+    default void addToAbstractServerCache(PunishmentPlayerType type, Boolean value) {
+        sendToAbstractLogger("Cache access without proper cache implementation.");
+    }
 
 }

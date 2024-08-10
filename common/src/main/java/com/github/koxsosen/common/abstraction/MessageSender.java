@@ -20,6 +20,7 @@ public class MessageSender {
                         } catch (IOException e) {
                             platform.sendToAbstractLogger("Unable to serialize: " + e);
                         }
+                        platform.getAbstractPluginMessaging(player, "simplevbans:main", byteArrayOutputStream.toByteArray());
                     } catch (IOException e) {
                         platform.sendToAbstractLogger("Unable to close stream: " + e);
                     }
