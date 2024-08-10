@@ -1,14 +1,20 @@
 package com.github.koxsosen.bungee;
 
 import com.github.koxsosen.common.LibertyBansApiHelper;
+import com.github.koxsosen.common.abstraction.AbstractPlatform;
+import com.github.koxsosen.common.abstraction.MessageSender;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import space.arim.libertybans.api.LibertyBans;
 import space.arim.omnibus.Omnibus;
 import space.arim.omnibus.OmnibusProvider;
 
+import java.util.Collection;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
-public class BungeePluginLoader extends Plugin {
+public class BungeePluginLoader extends Plugin implements AbstractPlatform {
 
     public static LibertyBansApiHelper libertyBansApiHelper;
 
@@ -23,6 +29,10 @@ public class BungeePluginLoader extends Plugin {
     }
 
     public static Omnibus omnibus;
+
+    public static MessageSender messageSender;
+
+    public static AbstractPlatform platform;
 
     @Override
     public void onEnable() {
@@ -44,6 +54,8 @@ public class BungeePluginLoader extends Plugin {
 
         getProxy().registerChannel("simplevbans:main");
         getProxy().getPluginManager().registerListener(this, new MessageReceiver());
+        messageSender = new MessageSender();
+        platform = new BungeePluginLoader();
     }
 
     @Override
@@ -56,4 +68,42 @@ public class BungeePluginLoader extends Plugin {
         return libertyBansApiHelper;
     }
 
+    @Override
+    public Object getAbstractServer() {
+        return ProxyServer.getInstance();
+    }
+
+    @Override
+    public Object getAbstractPlayerByUUID(UUID uuid) {
+        return ProxyServer.getInstance().getPlayer(uuid);
+    }
+
+    @Override
+    public Object getAbstractPlayerByName(String name) {
+        return ProxyServer.getInstance().getPlayer(name);
+    }
+
+    @Override
+    public void getAbstractPluginMessaging(UUID player, String identifier, byte[] data) {
+        ProxyServer.getInstance().getPlayer(player).sendData(identifier, data);
+    }
+
+    @Override
+    public Object getAbstractConnection(UUID player) {
+        return ProxyServer.getInstance().getPlayer(player).getServer();
+    }
+
+    @Override
+    public void sendToAbstractLogger(String data) {
+        ProxyServer.getInstance().getLogger().info(data);
+    }
+
+    @Override
+    public int getConnectedPlayers(UUID player) {
+        Collection<ProxiedPlayer> serverPlayers = ProxyServer.getInstance().getPlayer(player).getServer().getInfo().getPlayers();
+        if (serverPlayers == null || serverPlayers.isEmpty()) {
+            return 0;
+        }
+        return serverPlayers.size();
+    }
 }

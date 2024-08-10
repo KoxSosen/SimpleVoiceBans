@@ -8,9 +8,9 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
-import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.slf4j.Logger;
@@ -18,9 +18,7 @@ import space.arim.libertybans.api.LibertyBans;
 import space.arim.omnibus.Omnibus;
 import space.arim.omnibus.OmnibusProvider;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Plugin(id = "simplevoicebans", name = "SimpleVoiceBans", version = "1.4-SNAPSHOT", authors = {"KoxSosen"})
 
@@ -143,20 +141,27 @@ public class VelocityPluginLoader implements AbstractPlatform {
         return null;
     }
 
-    @Override
-    public Object getAbstractCurrentServer(UUID player) {
-        if (getServer().getPlayer(player).isPresent()) {
-            if (getServer().getPlayer(player).get().getCurrentServer().isPresent()) {
-                return getServer().getPlayer(player).get().getCurrentServer().get();
-            }
-        }
-        return null;
-    }
-
     // TODO: Find out if there is a common logging level implementation across platforms somehow.
     @Override
     public void sendToAbstractLogger(String data) {
         getLogger().info(data);
+    }
+
+    @Override
+    public int getConnectedPlayers(UUID player) {
+        Collection<Player> players = List.of();
+        if (getServer().getPlayer(player).isPresent()) {
+            if (getServer().getPlayer(player).get().getCurrentServer().isPresent()) {
+                Optional<ServerConnection> connection = getServer().getPlayer(player).get().getCurrentServer();
+                if (connection.isPresent()) {
+                    players = connection.get().getServer().getPlayersConnected();
+                    if (players == null || players.isEmpty()) {
+                        return 0;
+                    }
+                }
+            }
+        }
+        return players.size();
     }
 
 

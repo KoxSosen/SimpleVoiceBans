@@ -10,20 +10,21 @@ import java.util.UUID;
 public class MessageSender {
 
     public void sendPluginMessage(UUID player, AbstractPlatform platform, PunishmentPlayerType punishmentPlayerType) {
-        if (platform.getAbstractPlayerByUUID(player) != null) {
-            if (platform.getAbstractConnection(player) != null) {
-                try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-                    try (ObjectOutputStream stream = new ObjectOutputStream(byteArrayOutputStream)) {
-                        stream.writeObject(punishmentPlayerType);
-                        stream.flush();
+        if (platform.getConnectedPlayers(player) > 1) {
+            if (platform.getAbstractPlayerByUUID(player) != null) {
+                if (platform.getAbstractConnection(player) != null) {
+                    try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                        try (ObjectOutputStream stream = new ObjectOutputStream(byteArrayOutputStream)) {
+                            stream.writeObject(punishmentPlayerType);
+                            stream.flush();
+                        } catch (IOException e) {
+                            platform.sendToAbstractLogger("Unable to serialize: " + e);
+                        }
                     } catch (IOException e) {
-                        platform.sendToAbstractLogger("Unable to serialize: " + e);
+                        platform.sendToAbstractLogger("Unable to close stream: " + e);
                     }
-                } catch (IOException e) {
-                    platform.sendToAbstractLogger("Unable to close stream: " + e);
                 }
             }
         }
     }
-
 }

@@ -14,9 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import space.arim.omnibus.util.concurrent.ReactionStage;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.util.Objects;
 import java.util.UUID;
@@ -71,7 +68,7 @@ public class SimpleVoiceBans implements VoicechatPlugin {
                 }
             } else {
                 if (BukkitPluginLoader.isIsBungee()) {
-                    BukkitPluginLoader.getMorePaperLib().scheduling().asyncScheduler().run(() -> sendCustomData(eventPlayer, new PunishmentPlayerType(uuid, inetAddress)));
+                    BukkitPluginLoader.getMorePaperLib().scheduling().asyncScheduler().run(() -> BukkitPluginLoader.getMessageSender().sendPluginMessage(eventPlayer.getUniqueId(), BukkitPluginLoader.getPlatform(), new PunishmentPlayerType(uuid, inetAddress)));
                 } else {
                     ReactionStage<Integer> isMuted = BukkitPluginLoader.getLibertyBansApiHelper().checkMuted(BukkitPluginLoader.getApi(), punishmentPlayerType);
                     isMuted.thenAcceptAsync(mutedState -> checkResponse(punishmentPlayerType, mutedState))
@@ -82,27 +79,6 @@ public class SimpleVoiceBans implements VoicechatPlugin {
                 }
             }
         }
-    }
-
-    private void sendCustomData(Player player, PunishmentPlayerType punishmentPlayerType) {
-        ByteArrayOutputStream byao = new ByteArrayOutputStream();
-        ObjectOutputStream outputStream;
-        try {
-            outputStream = new ObjectOutputStream(byao);
-            outputStream.writeObject(punishmentPlayerType);
-            outputStream.flush();
-            outputStream.close();
-        } catch (IOException e) {
-            Bukkit.getServer().getLogger().info("Unable to serialize: " + e);
-            return;
-        }
-        Bukkit.getServer().sendPluginMessage(BukkitPluginLoader.getInstance(), "simplevbans:main", byao.toByteArray());
-        try {
-            byao.close();
-        } catch (IOException e) {
-            Bukkit.getServer().getLogger().info("Unable to close stream: " + e);
-        }
-
     }
 
     private void sendActionBar(Player player, BaseComponent component) {
