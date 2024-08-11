@@ -6,7 +6,9 @@ import com.github.koxsosen.common.abstraction.Constants;
 import com.github.koxsosen.common.abstraction.MessageSender;
 import com.github.koxsosen.common.abstraction.ServerType;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.Connection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
 import space.arim.libertybans.api.LibertyBans;
 import space.arim.omnibus.Omnibus;
@@ -18,7 +20,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public class BungeePluginLoader extends Plugin implements AbstractPlatform {
+public class BungeePluginLoader extends Plugin implements AbstractPlatform<ProxyServer, ProxiedPlayer, Server, Connection> {
 
     public static LibertyBansApiHelper getLibertyBansApiHelper() {
         return libertyBansApiHelper;
@@ -38,7 +40,7 @@ public class BungeePluginLoader extends Plugin implements AbstractPlatform {
 
     private static Omnibus omnibus;
 
-    public static AbstractPlatform getPlatform() {
+    public static AbstractPlatform<ProxyServer, ProxiedPlayer, Server, Connection> getPlatform() {
         return platform;
     }
 
@@ -48,7 +50,7 @@ public class BungeePluginLoader extends Plugin implements AbstractPlatform {
 
     private static MessageSender messageSender;
 
-    private static AbstractPlatform platform;
+    private static AbstractPlatform<ProxyServer, ProxiedPlayer, Server, Connection> platform;
 
     public static Logger getPluginLogger() {
         return logger;
@@ -84,30 +86,28 @@ public class BungeePluginLoader extends Plugin implements AbstractPlatform {
     }
 
     @Override
-    public Object getAbstractServer() {
+    public ProxyServer getAbstractServer() {
         return ProxyServer.getInstance();
     }
 
     @Override
-    public Object getAbstractPlayerByUUID(UUID uuid) {
+    public ProxiedPlayer getAbstractPlayerByUUID(UUID uuid) {
         return ProxyServer.getInstance().getPlayer(uuid);
     }
 
     @Override
-    public Object getAbstractPlayerByName(String name) {
+    public ProxiedPlayer getAbstractPlayerByName(String name) {
         return ProxyServer.getInstance().getPlayer(name);
     }
 
     @Override
-    public UUID getAbstractPlayerUUID(Object player) {
-        ProxiedPlayer player1 = (ProxiedPlayer) player;
-        return player1.getUniqueId();
+    public UUID getAbstractPlayerUUID(ProxiedPlayer player) {
+        return player.getUniqueId();
     }
 
     @Override
-    public InetAddress getAbstractPlayerInetAddress(Object player) {
-        ProxiedPlayer player1 = (ProxiedPlayer) player;
-        return player1.getAddress().getAddress();
+    public InetAddress getAbstractPlayerInetAddress(ProxiedPlayer player) {
+        return player.getAddress().getAddress();
     }
 
     @Override
@@ -116,7 +116,7 @@ public class BungeePluginLoader extends Plugin implements AbstractPlatform {
     }
 
     @Override
-    public Object getAbstractConnection(UUID player) {
+    public Server getAbstractConnection(UUID player) {
         return ProxyServer.getInstance().getPlayer(player).getServer();
     }
 
@@ -145,7 +145,7 @@ public class BungeePluginLoader extends Plugin implements AbstractPlatform {
     }
 
     @Override
-    public boolean verifyAbstractSource(Object source) {
+    public boolean verifyAbstractSource(Connection source) {
         return source instanceof ProxiedPlayer;
     }
 

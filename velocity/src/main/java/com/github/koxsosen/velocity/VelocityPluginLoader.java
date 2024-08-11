@@ -13,6 +13,7 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
+import com.velocitypowered.api.proxy.messages.ChannelMessageSource;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ import java.util.*;
 
 @Plugin(id = "simplevoicebans", name = "SimpleVoiceBans", version = "1.4-SNAPSHOT", authors = {"KoxSosen"})
 
-public class VelocityPluginLoader implements AbstractPlatform {
+public class VelocityPluginLoader implements AbstractPlatform<ProxyServer, Player, ServerConnection, ChannelMessageSource> {
 
     public static LibertyBansApiHelper getLibertyBansApiHelper() {
         return libertyBansApiHelper;
@@ -51,11 +52,11 @@ public class VelocityPluginLoader implements AbstractPlatform {
 
     private static MessageSender messageSender;
 
-    public static AbstractPlatform getPlatform() {
+    public static AbstractPlatform<ProxyServer, Player, ServerConnection, ChannelMessageSource> getPlatform() {
         return platform;
     }
 
-    private static AbstractPlatform platform;
+    private static AbstractPlatform<ProxyServer, Player, ServerConnection, ChannelMessageSource> platform;
 
     public static ProxyServer getServer() {
         return server;
@@ -106,30 +107,34 @@ public class VelocityPluginLoader implements AbstractPlatform {
     }
 
     @Override
-    public Object getAbstractServer() {
+    public ProxyServer getAbstractServer() {
         return getServer();
     }
 
     @Override
-    public Object getAbstractPlayerByUUID(UUID uuid) {
-        return getServer().getPlayer(uuid);
+    public Player getAbstractPlayerByUUID(UUID uuid) {
+        if (getServer().getPlayer(uuid).isPresent()) {
+            return getServer().getPlayer(uuid).get();
+        }
+        return null;
     }
 
     @Override
-    public Object getAbstractPlayerByName(String name) {
-        return getServer().getPlayer(name);
+    public Player getAbstractPlayerByName(String name) {
+        if (getServer().getPlayer(name).isPresent()) {
+            return getServer().getPlayer(name).get();
+        }
+        return null;
     }
 
     @Override
-    public UUID getAbstractPlayerUUID(Object player) {
-        Player player1 = (Player) player;
-        return player1.getUniqueId();
+    public UUID getAbstractPlayerUUID(Player player) {
+        return player.getUniqueId();
     }
 
     @Override
-    public InetAddress getAbstractPlayerInetAddress(Object player) {
-        Player player1 = (Player) player;
-        return player1.getRemoteAddress().getAddress();
+    public InetAddress getAbstractPlayerInetAddress(Player player) {
+        return player.getRemoteAddress().getAddress();
     }
 
     @Override
@@ -143,7 +148,7 @@ public class VelocityPluginLoader implements AbstractPlatform {
     }
 
     @Override
-    public Object getAbstractConnection(UUID player) {
+    public ServerConnection getAbstractConnection(UUID player) {
         if (getServer().getPlayer(player).isPresent()) {
             if (getServer().getPlayer(player).get().getCurrentServer().isPresent()) {
                 return getServer().getPlayer(player).get().getCurrentServer().get();
@@ -185,8 +190,8 @@ public class VelocityPluginLoader implements AbstractPlatform {
     }
 
     @Override
-    public boolean verifyAbstractSource(Object source) {
-        return source instanceof ServerConnection;
+    public boolean verifyAbstractSource(ChannelMessageSource source) {
+        return source instanceof Player;
     }
 
 }

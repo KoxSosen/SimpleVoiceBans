@@ -8,6 +8,7 @@ import com.github.koxsosen.common.abstraction.MessageSender;
 import com.github.koxsosen.common.abstraction.ServerType;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import space.arim.libertybans.api.LibertyBans;
@@ -20,7 +21,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public class BukkitPluginLoader extends JavaPlugin implements AbstractPlatform {
+public class BukkitPluginLoader extends JavaPlugin implements AbstractPlatform<Server, Player, Server, Player> {
 
     private static LibertyBansApiHelper libertyBansApiHelper;
 
@@ -42,13 +43,13 @@ public class BukkitPluginLoader extends JavaPlugin implements AbstractPlatform {
         return messageSender;
     }
 
-    public static AbstractPlatform getPlatform() {
+    public static AbstractPlatform<Server, Player, Server, Player> getPlatform() {
         return platform;
     }
 
     private static MessageSender messageSender;
 
-    private static AbstractPlatform platform;
+    private static AbstractPlatform<Server, Player, Server, Player> platform;
 
     public static Logger getPluginLogger() {
         return logger;
@@ -132,30 +133,28 @@ public class BukkitPluginLoader extends JavaPlugin implements AbstractPlatform {
 
     // TODO: Deal with nullables here.
     @Override
-    public Object getAbstractServer() {
+    public Server getAbstractServer() {
         return Bukkit.getServer();
     }
 
     @Override
-    public Object getAbstractPlayerByUUID(UUID uuid) {
+    public Player getAbstractPlayerByUUID(UUID uuid) {
         return Bukkit.getPlayer(uuid);
     }
 
     @Override
-    public Object getAbstractPlayerByName(String name) {
+    public Player getAbstractPlayerByName(String name) {
         return Bukkit.getPlayer(name);
     }
 
     @Override
-    public UUID getAbstractPlayerUUID(Object player) {
-        Player player1 = (Player) player;
-        return player1.getUniqueId();
+    public UUID getAbstractPlayerUUID(Player player) {
+        return player.getUniqueId();
     }
 
     @Override
-    public InetAddress getAbstractPlayerInetAddress(Object player) {
-        Player player1 = (Player) player;
-        return player1.getAddress().getAddress();
+    public InetAddress getAbstractPlayerInetAddress(Player player) {
+        return player.getAddress().getAddress();
     }
 
     @Override
@@ -166,7 +165,7 @@ public class BukkitPluginLoader extends JavaPlugin implements AbstractPlatform {
     }
 
     @Override
-    public Object getAbstractConnection(UUID player) {
+    public Server getAbstractConnection(UUID player) {
         return Bukkit.getPlayer(player).getServer();
     }
 
@@ -196,8 +195,8 @@ public class BukkitPluginLoader extends JavaPlugin implements AbstractPlatform {
     }
 
     @Override
-    public boolean verifyAbstractSource(Object source) {
-        return source instanceof Player;
+    public boolean verifyAbstractSource(Player source) {
+        return source != null;
     }
 
 }

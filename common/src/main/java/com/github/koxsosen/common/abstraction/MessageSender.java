@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class MessageSender {
 
-    public void sendPluginMessage(UUID player, AbstractPlatform platform, PunishmentPlayerType punishmentPlayerType) {
+    public <T, E, V, V1> void sendPluginMessage(UUID player, AbstractPlatform<T, E, V, V1> platform, PunishmentPlayerType punishmentPlayerType) {
         if (platform.getConnectedPlayers(player) > 1) {
             if (platform.getAbstractPlayerByUUID(player) != null) {
                 if (platform.getAbstractConnection(player) != null) {
@@ -27,7 +27,7 @@ public class MessageSender {
         }
     }
 
-    public PunishmentPlayerType handlePluginMessage(Object source, String identifier, AbstractPlatform platform, byte[] data) {
+    public <T, E, V, V1> PunishmentPlayerType handlePluginMessage(V1 source, String identifier, AbstractPlatform<T, E, V, V1> platform, byte[] data) {
         if (!platform.verifyAbstractSource(source) || identifier.equalsIgnoreCase(Constants.getChannelIdentifier())) {
             return null;
         }

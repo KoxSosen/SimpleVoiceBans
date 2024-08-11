@@ -6,42 +6,48 @@ import space.arim.omnibus.Omnibus;
 import java.net.InetAddress;
 import java.util.UUID;
 
-public interface AbstractPlatform {
+// T - Server
+// E - Player
+// V - ServerConnectionWhatever
+// V1 - Type we get from the stuff
+public interface AbstractPlatform<T, E, V, V1> {
 
     // TODO: Add param descriptions.
     /**
      * Gets the respective platform's server implementation's object.
+     *
      * @return The respective platform's server object.
      */
-    Object getAbstractServer();
+    T getAbstractServer();
 
     /**
      * Gets the player on their respective platforms by their uuid, and returns the player object.
+     *
      * @param uuid
      * @return The player object.
      */
-    Object getAbstractPlayerByUUID(UUID uuid);
+    E getAbstractPlayerByUUID(UUID uuid);
 
     /**
      * Gets the player on their respective platforms by their name, and returns the player object.
      * @param name
      * @return The player object.
      */
-    Object getAbstractPlayerByName(String name);
+    E getAbstractPlayerByName(String name);
 
     /**
      * Gets the player's UUID on their respective platform.
      * @param player
      * @return The supplied player object's UUID.
      */
-    UUID getAbstractPlayerUUID(Object player);
+    UUID getAbstractPlayerUUID(E player);
 
     /**
      * Gets the player's InetAddress on their respective platform.
      * @param player
      * @return The supplied player object's InetAddress.
      */
-    InetAddress getAbstractPlayerInetAddress(Object player);
+    InetAddress getAbstractPlayerInetAddress(E player);
 
     /**
      * Implements plugin messaging on all respective platforms. Additionally, this method's
@@ -57,7 +63,7 @@ public interface AbstractPlatform {
      * @param player
      * @return The server object the player is connected to.
      */
-    default Object getAbstractConnection(UUID player) {
+     default V getAbstractConnection(UUID player) {
         return null;
     }
 
@@ -104,7 +110,7 @@ public interface AbstractPlatform {
      * Verifies whether the incoming plugin message is from a source we expected.
      * @return Whether the incoming plugin message source is expected, or not.
      */
-    default boolean verifyAbstractSource(Object source) {
+    default boolean verifyAbstractSource(V1 source) {
         return false;
     }
 
