@@ -14,8 +14,15 @@ public class MessageReceiver {
     @SuppressWarnings("unused")
     @Subscribe
     public void onPluginMessageFromBackend(PluginMessageEvent event) {
+        if (!event.getIdentifier().getId().equalsIgnoreCase(Constants.getChannelIdentifier())) {
+            return;
+        }
 
-        PunishmentPlayerType punishmentPlayerType = getMessageSender().handlePluginMessage(event.getSource(), event.getIdentifier().toString(), getPlatform(), event.getData());
+        if (!(event.getSource() instanceof ServerConnection)) {
+            return;
+        }
+
+        PunishmentPlayerType punishmentPlayerType = getMessageSender().handlePluginMessage(getPlatform(), event.getData());
 
         if (punishmentPlayerType != null) {
             ServerConnection playerConnection = (ServerConnection) event.getSource();
@@ -26,8 +33,6 @@ public class MessageReceiver {
                         getLogger().info(Constants.getErrPluginMessage() + ex);
                         return null;
                     });
-        } else {
-            getLogger().info(Constants.getErrSpoofingAttempt() + event.getSource().toString());
         }
 
     }

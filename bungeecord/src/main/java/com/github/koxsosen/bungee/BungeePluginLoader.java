@@ -6,7 +6,6 @@ import com.github.koxsosen.common.abstraction.Constants;
 import com.github.koxsosen.common.abstraction.MessageSender;
 import com.github.koxsosen.common.abstraction.ServerType;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.Connection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -20,7 +19,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public class BungeePluginLoader extends Plugin implements AbstractPlatform<ProxyServer, ProxiedPlayer, Server, Connection> {
+public class BungeePluginLoader extends Plugin implements AbstractPlatform<ProxyServer, ProxiedPlayer, Server> {
 
     public static LibertyBansApiHelper getLibertyBansApiHelper() {
         return libertyBansApiHelper;
@@ -40,8 +39,14 @@ public class BungeePluginLoader extends Plugin implements AbstractPlatform<Proxy
 
     private static Omnibus omnibus;
 
-    public static AbstractPlatform<ProxyServer, ProxiedPlayer, Server, Connection> getPlatform() {
+    public static AbstractPlatform<ProxyServer, ProxiedPlayer, Server> getPlatform() {
         return platform;
+    }
+
+    private static BungeePluginLoader instance;
+
+    public static BungeePluginLoader getInstance() {
+        return instance;
     }
 
     public static MessageSender getMessageSender() {
@@ -50,7 +55,7 @@ public class BungeePluginLoader extends Plugin implements AbstractPlatform<Proxy
 
     private static MessageSender messageSender;
 
-    private static AbstractPlatform<ProxyServer, ProxiedPlayer, Server, Connection> platform;
+    private static AbstractPlatform<ProxyServer, ProxiedPlayer, Server> platform;
 
     public static Logger getPluginLogger() {
         return logger;
@@ -60,6 +65,7 @@ public class BungeePluginLoader extends Plugin implements AbstractPlatform<Proxy
 
     @Override
     public void onEnable() {
+        instance = this;
         logger = ProxyServer.getInstance().getLogger();
         try {
             omnibus = OmnibusProvider.getOmnibus();
@@ -75,7 +81,7 @@ public class BungeePluginLoader extends Plugin implements AbstractPlatform<Proxy
         getProxy().registerChannel(Constants.getChannelIdentifier());
         getProxy().getPluginManager().registerListener(this, new MessageReceiver());
         messageSender = new MessageSender();
-        platform = new BungeePluginLoader();
+        platform = getInstance();
         getLibertyBansApiHelper().listenToPunishmentEvents(getPlatform(), getMessageSender());
     }
 
@@ -142,11 +148,6 @@ public class BungeePluginLoader extends Plugin implements AbstractPlatform<Proxy
     @Override
     public ServerType getAbstractServerType() {
         return ServerType.PROXY;
-    }
-
-    @Override
-    public boolean verifyAbstractSource(Connection source) {
-        return source instanceof ProxiedPlayer;
     }
 
 }

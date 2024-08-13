@@ -7,8 +7,8 @@ import java.util.UUID;
 
 public class MessageSender {
 
-    public <T, E, V, V1> void sendPluginMessage(UUID player, AbstractPlatform<T, E, V, V1> platform, PunishmentPlayerType punishmentPlayerType) {
-        if (platform.getConnectedPlayers(player) > 1) {
+    public <T, E, V> void sendPluginMessage(UUID player, AbstractPlatform<T, E, V> platform, PunishmentPlayerType punishmentPlayerType) {
+        if (platform.getConnectedPlayers(player) > 0) {
             if (platform.getAbstractPlayerByUUID(player) != null) {
                 if (platform.getAbstractConnection(player) != null) {
                     try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
@@ -27,11 +27,7 @@ public class MessageSender {
         }
     }
 
-    public <T, E, V, V1> PunishmentPlayerType handlePluginMessage(V1 source, String identifier, AbstractPlatform<T, E, V, V1> platform, byte[] data) {
-        if (!platform.verifyAbstractSource(source) || identifier.equalsIgnoreCase(Constants.getChannelIdentifier())) {
-            return null;
-        }
-
+    public <T, E, V> PunishmentPlayerType handlePluginMessage(AbstractPlatform<T, E, V> platform, byte[] data) {
         PunishmentPlayerType punishmentPlayerType = null;
 
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data)) {
@@ -43,6 +39,7 @@ public class MessageSender {
         } catch (IOException e) {
             platform.sendToAbstractLogger(Constants.getErrStream() + e);
         }
+        System.out.println(punishmentPlayerType.getUuid() + " " + punishmentPlayerType.getInetAddress());
         return punishmentPlayerType;
     }
 

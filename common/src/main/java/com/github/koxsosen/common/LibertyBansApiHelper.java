@@ -25,14 +25,14 @@ public class LibertyBansApiHelper {
         });
     }
 
-    public void listenToPunishmentEvents(AbstractPlatform platform, MessageSender messageSender) {
+    public <T, E, V> void listenToPunishmentEvents(AbstractPlatform<T, E, V> platform, MessageSender messageSender) {
         EventConsumer<PostPardonEvent> postPardonEventEventConsumer = event -> {
             if (event.getPunishment().getType().equals(PunishmentType.MUTE)) {
                 if (event.getTarget().isPresent()) {
                     String playerName = event.getTarget().get();
                     if (platform.getAbstractServer() != null) {
                         if (platform.getAbstractPlayerByName(playerName) != null) {
-                            PunishmentPlayerType type = new PunishmentPlayerType(platform.getAbstractPlayerUUID(playerName), platform.getAbstractPlayerInetAddress(playerName), 1);
+                            PunishmentPlayerType type = new PunishmentPlayerType(platform.getAbstractPlayerUUID(platform.getAbstractPlayerByName(playerName)), platform.getAbstractPlayerInetAddress(platform.getAbstractPlayerByName(playerName)), 0);
                             switch (platform.getAbstractServerType()) {
                                 case BACKEND -> platform.addToAbstractServerCache(type, false);
                                 case PROXY -> messageSender.sendPluginMessage(platform.getAbstractPlayerUUID(platform.getAbstractPlayerByName(playerName)), platform, type);
@@ -51,7 +51,7 @@ public class LibertyBansApiHelper {
                     String playerName = event.getTarget().get();
                     if (platform.getAbstractServer() != null) {
                         if (platform.getAbstractPlayerByName(playerName) != null) {
-                            PunishmentPlayerType type = new PunishmentPlayerType(platform.getAbstractPlayerUUID(playerName), platform.getAbstractPlayerInetAddress(playerName), 1);
+                            PunishmentPlayerType type = new PunishmentPlayerType(platform.getAbstractPlayerUUID(platform.getAbstractPlayerByName(playerName)), platform.getAbstractPlayerInetAddress(platform.getAbstractPlayerByName(playerName)), 1);
                             switch (platform.getAbstractServerType()) {
                                 case BACKEND -> platform.addToAbstractServerCache(type, true);
                                 case PROXY -> messageSender.sendPluginMessage(platform.getAbstractPlayerUUID(platform.getAbstractPlayerByName(playerName)), platform, type);

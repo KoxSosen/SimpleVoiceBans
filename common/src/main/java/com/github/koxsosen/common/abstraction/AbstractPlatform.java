@@ -6,11 +6,7 @@ import space.arim.omnibus.Omnibus;
 import java.net.InetAddress;
 import java.util.UUID;
 
-// T - Server
-// E - Player
-// V - ServerConnectionWhatever
-// V1 - Type we get from the stuff
-public interface AbstractPlatform<T, E, V, V1> {
+public interface AbstractPlatform<T, E, V> {
 
     // TODO: Add param descriptions.
     /**
@@ -104,14 +100,6 @@ public interface AbstractPlatform<T, E, V, V1> {
      */
     default void addToAbstractServerCache(PunishmentPlayerType type, Boolean value) {
         sendToAbstractLogger("Cache access without proper cache implementation.");
-    }
-
-    /**
-     * Verifies whether the incoming plugin message is from a source we expected.
-     * @return Whether the incoming plugin message source is expected, or not.
-     */
-    default boolean verifyAbstractSource(V1 source) {
-        return false;
     }
 
 }

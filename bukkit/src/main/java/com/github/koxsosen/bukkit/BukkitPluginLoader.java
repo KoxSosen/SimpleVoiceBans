@@ -17,11 +17,14 @@ import space.arim.omnibus.Omnibus;
 import space.arim.omnibus.OmnibusProvider;
 
 import java.net.InetAddress;
+import java.time.Duration;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public class BukkitPluginLoader extends JavaPlugin implements AbstractPlatform<Server, Player, Server, Player> {
+import static com.github.koxsosen.bukkit.SimpleVoiceBans.*;
+
+public class BukkitPluginLoader extends JavaPlugin implements AbstractPlatform<Server, Player, Server> {
 
     private static LibertyBansApiHelper libertyBansApiHelper;
 
@@ -43,13 +46,13 @@ public class BukkitPluginLoader extends JavaPlugin implements AbstractPlatform<S
         return messageSender;
     }
 
-    public static AbstractPlatform<Server, Player, Server, Player> getPlatform() {
+    public static AbstractPlatform<Server, Player, Server> getPlatform() {
         return platform;
     }
 
     private static MessageSender messageSender;
 
-    private static AbstractPlatform<Server, Player, Server, Player> platform;
+    private static AbstractPlatform<Server, Player, Server> platform;
 
     public static Logger getPluginLogger() {
         return logger;
@@ -81,16 +84,19 @@ public class BukkitPluginLoader extends JavaPlugin implements AbstractPlatform<S
         }
 
         logger = getLogger();
+        platform = getInstance();
+
+        // TODO: We can save a bit of memory here, as in case of standalone setups MessageSender isn't actually needed.
+        messageSender = new MessageSender();
 
         try {
             omnibus = OmnibusProvider.getOmnibus();
             api = getOmnibus().getRegistry().getProvider(LibertyBans.class).orElseThrow();
             getPluginLogger().info(Constants.getMsgBackend());
             libertyBansApiHelper = new LibertyBansApiHelper();
-            morePaperLib = new MorePaperLib(getInstance());
+            getLibertyBansApiHelper().listenToPunishmentEvents(getPlatform(), getMessageSender());
         } catch (NoSuchElementException | NoClassDefFoundError ignored) {
             getPluginLogger().info(Constants.getMsgProxy());
-            messageSender = new MessageSender();
             isBungee = checkIfBungee();
             if (checkIfBungee()) {
                 getServer().getMessenger().registerOutgoingPluginChannel(this, Constants.getChannelIdentifier());
@@ -100,8 +106,11 @@ public class BukkitPluginLoader extends JavaPlugin implements AbstractPlatform<S
                 getServer().getPluginManager().disablePlugin(this);
             }
         }
-        platform = new BukkitPluginLoader();
-        getLibertyBansApiHelper().listenToPunishmentEvents(getPlatform(), getMessageSender());
+
+        morePaperLib = new MorePaperLib(getInstance());
+
+        getMorePaperLib().scheduling().asyncScheduler().runAtFixedRate(() -> getUuidSet().clear(), Duration.ofSeconds(5), Duration.ofMinutes(10));
+
     }
 
     @Override
@@ -207,11 +216,6 @@ public class BukkitPluginLoader extends JavaPlugin implements AbstractPlatform<S
     @Override
     public void addToAbstractServerCache(PunishmentPlayerType type, Boolean value) {
         SimpleVoiceBans.getMuteCache().put(type, value);
-    }
-
-    @Override
-    public boolean verifyAbstractSource(Player source) {
-        return source != null;
     }
 
 }

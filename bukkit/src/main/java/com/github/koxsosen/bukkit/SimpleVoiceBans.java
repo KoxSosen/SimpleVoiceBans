@@ -79,7 +79,7 @@ public class SimpleVoiceBans implements VoicechatPlugin {
             } else {
                 if (isIsBungee()) {
                     if (!getUuidSet().contains(eventPlayer.getUniqueId())) {
-                        getMorePaperLib().scheduling().asyncScheduler().run((scheduledTask) -> getMessageSender().sendPluginMessage(eventPlayer.getUniqueId(), getPlatform(), new PunishmentPlayerType(uuid, inetAddress)));
+                        getMorePaperLib().scheduling().asyncScheduler().run(() -> getMessageSender().sendPluginMessage(eventPlayer.getUniqueId(), getPlatform(), new PunishmentPlayerType(uuid, inetAddress)));
                     }
                     getUuidSet().add(eventPlayer.getUniqueId());
                 } else {

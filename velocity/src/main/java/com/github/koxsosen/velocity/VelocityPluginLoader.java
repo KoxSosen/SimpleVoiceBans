@@ -13,7 +13,6 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
-import com.velocitypowered.api.proxy.messages.ChannelMessageSource;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.slf4j.Logger;
@@ -26,7 +25,7 @@ import java.util.*;
 
 @Plugin(id = "simplevoicebans", name = "SimpleVoiceBans", version = "1.4-SNAPSHOT", authors = {"KoxSosen"})
 
-public class VelocityPluginLoader implements AbstractPlatform<ProxyServer, Player, ServerConnection, ChannelMessageSource> {
+public class VelocityPluginLoader implements AbstractPlatform<ProxyServer, Player, ServerConnection> {
 
     public static LibertyBansApiHelper getLibertyBansApiHelper() {
         return libertyBansApiHelper;
@@ -52,11 +51,17 @@ public class VelocityPluginLoader implements AbstractPlatform<ProxyServer, Playe
 
     private static MessageSender messageSender;
 
-    public static AbstractPlatform<ProxyServer, Player, ServerConnection, ChannelMessageSource> getPlatform() {
+    public static AbstractPlatform<ProxyServer, Player, ServerConnection> getPlatform() {
         return platform;
     }
 
-    private static AbstractPlatform<ProxyServer, Player, ServerConnection, ChannelMessageSource> platform;
+    private static AbstractPlatform<ProxyServer, Player, ServerConnection> platform;
+
+    private static VelocityPluginLoader instance;
+
+    public static VelocityPluginLoader getInstance() {
+        return instance;
+    }
 
     public static ProxyServer getServer() {
         return server;
@@ -81,6 +86,7 @@ public class VelocityPluginLoader implements AbstractPlatform<ProxyServer, Playe
     @Subscribe
     @SuppressWarnings("unused")
     public void onProxyInitialization(ProxyInitializeEvent event) {
+        instance = this;
         try {
             omnibus = OmnibusProvider.getOmnibus();
             api = omnibus.getRegistry().getProvider(LibertyBans.class).orElseThrow();
@@ -91,7 +97,7 @@ public class VelocityPluginLoader implements AbstractPlatform<ProxyServer, Playe
 
         libertyBansApiHelper = new LibertyBansApiHelper();
         messageSender = new MessageSender();
-        platform = new VelocityPluginLoader(getServer(), getLogger());
+        platform = getInstance();
         getLibertyBansApiHelper().listenToPunishmentEvents(getPlatform(), getMessageSender());
         getLogger().info(Constants.getMsgLoaded());
 
@@ -187,11 +193,6 @@ public class VelocityPluginLoader implements AbstractPlatform<ProxyServer, Playe
     @Override
     public ServerType getAbstractServerType() {
         return ServerType.PROXY;
-    }
-
-    @Override
-    public boolean verifyAbstractSource(ChannelMessageSource source) {
-        return source instanceof Player;
     }
 
 }

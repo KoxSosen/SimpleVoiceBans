@@ -12,10 +12,6 @@ public class Constants {
 
     private static final String ERR_PLUGIN_MESSAGE = "Unable to send plugin message: ";
 
-    private static final String ERR_SPOOFING_ATTEMPT = "Received plugin message, but was unable to verify it's sender. \n" +
-            "This is a possible spoofing attempt, please verify what this player is sending. \n" +
-            "String representation of the object: ";
-
     private static final String ERR_MUTE = "Determining the muted state has completed exceptionally.";
 
     private static final String MSG_PROXY_REQUIREMENT = "SimpleVoiceBans on the proxy requires LibertyBans to be installed too. \n" +
@@ -25,7 +21,7 @@ public class Constants {
 
     private static final String MSG_BACKEND = "Since this server has LibertyBans installed, disabling proxy support.";
 
-    private static final String MSG_PROXY = "Since this server doesn't have LibertyBans installed, enabling proxy support";
+    private static final String MSG_PROXY = "Since this server doesn't have LibertyBans installed, enabling proxy support.";
 
     private static final String ERR_BACKEND_MISSING = "Since this server is not proxied, nor it has LibertyBans installed, disabling.";
 
@@ -43,10 +39,6 @@ public class Constants {
 
     public static String getErrSerialize() {
         return ERR_SERIALIZE;
-    }
-
-    public static String getErrSpoofingAttempt() {
-        return ERR_SPOOFING_ATTEMPT;
     }
 
     public static String getErrStream() {

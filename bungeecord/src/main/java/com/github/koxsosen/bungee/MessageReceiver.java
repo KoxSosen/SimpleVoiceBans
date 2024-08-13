@@ -16,8 +16,15 @@ public class MessageReceiver implements Listener {
     @EventHandler
     @SuppressWarnings("unused")
     public void onPluginMessageReceived(PluginMessageEvent event) {
+        if (!event.getTag().equalsIgnoreCase(Constants.getChannelIdentifier())) {
+            return;
+        }
 
-        PunishmentPlayerType punishmentPlayerType = getMessageSender().handlePluginMessage(event.getReceiver(), event.getTag(), getPlatform(), event.getData());
+        if (!(event.getReceiver() instanceof ProxiedPlayer)) {
+            return;
+        }
+
+        PunishmentPlayerType punishmentPlayerType = getMessageSender().handlePluginMessage(getPlatform(), event.getData());
 
         if (punishmentPlayerType != null) {
             ProxiedPlayer player = (ProxiedPlayer) event.getReceiver();
@@ -29,8 +36,6 @@ public class MessageReceiver implements Listener {
                         return null;
                     });
 
-        } else {
-            getPluginLogger().info(Constants.getErrSpoofingAttempt() + event.getReceiver().toString());
         }
 
     }
