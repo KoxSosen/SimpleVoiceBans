@@ -1,17 +1,19 @@
 package com.github.koxsosen.bukkit;
 
 import com.github.koxsosen.common.PunishmentPlayerType;
+import com.github.koxsosen.common.abstraction.Constants;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.io.*;
+import static com.github.koxsosen.bukkit.BukkitPluginLoader.*;
+
 
 public class MessageReceiver implements PluginMessageListener {
     @Override
-    public void onPluginMessageReceived(String channel, @NonNull Player player, byte[] bytes) {
-        if (!channel.equals("simplevbans:main")) {
+    public void onPluginMessageReceived(@NonNull String channel, @NonNull Player player, byte @NonNull [] bytes) {
+        if (!channel.equalsIgnoreCase(Constants.getChannelIdentifier())) {
             return;
         }
 
@@ -19,28 +21,11 @@ public class MessageReceiver implements PluginMessageListener {
             return;
         }
 
-        PunishmentPlayerType punishmentPlayerTypeWithResponse;
+        PunishmentPlayerType punishmentPlayerType = getMessageSender().handlePluginMessage(getPlatform(), bytes);
 
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-        ObjectInputStream objectInputStream;
-        try {
-            objectInputStream = new ObjectInputStream(inputStream);
-            punishmentPlayerTypeWithResponse = (PunishmentPlayerType) objectInputStream.readObject();
-            objectInputStream.close();
-        } catch (IOException | ClassNotFoundException e) {
-            Bukkit.getServer().getLogger().info("Unable to deserialize: " + e);
-            return;
-        }
-
-        try {
-            inputStream.close();
-        } catch (IOException e) {
-            Bukkit.getServer().getLogger().info("Unable to close stream: " + e);
-            return;
-        }
-
-        if (punishmentPlayerTypeWithResponse != null) {
-            SimpleVoiceBans.checkResponse(new PunishmentPlayerType(punishmentPlayerTypeWithResponse.getUuid(), punishmentPlayerTypeWithResponse.getInetAddress()), punishmentPlayerTypeWithResponse.getState());
+        if (punishmentPlayerType != null) {
+            SimpleVoiceBans.checkResponse(new PunishmentPlayerType(punishmentPlayerType.getUuid(), punishmentPlayerType.getInetAddress()), punishmentPlayerType.getState());
+            SimpleVoiceBans.getUuidSet().remove(punishmentPlayerType.getUuid());
         }
 
     }
