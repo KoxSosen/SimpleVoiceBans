@@ -96,6 +96,7 @@ public class BukkitPluginLoader extends JavaPlugin implements AbstractPlatform<S
             libertyBansApiHelper = new LibertyBansApiHelper();
             getLibertyBansApiHelper().listenToPunishmentEvents(getPlatform(), getMessageSender());
         } catch (NoSuchElementException | NoClassDefFoundError ignored) {
+            api = null;
             getPluginLogger().info(Constants.getMsgProxy());
             isBungee = checkIfBungee();
             if (checkIfBungee()) {

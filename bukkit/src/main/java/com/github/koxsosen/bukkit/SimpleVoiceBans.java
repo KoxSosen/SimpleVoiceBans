@@ -82,13 +82,13 @@ public class SimpleVoiceBans implements VoicechatPlugin {
                         getMorePaperLib().scheduling().asyncScheduler().run(() -> getMessageSender().sendPluginMessage(eventPlayer.getUniqueId(), getPlatform(), new PunishmentPlayerType(uuid, inetAddress)));
                     }
                     getUuidSet().add(eventPlayer.getUniqueId());
-                } else {
-                        ReactionStage<Integer> isMuted = getLibertyBansApiHelper().checkMuted(getApi(), punishmentPlayerType);
-                        isMuted.thenAcceptAsync(mutedState -> checkResponse(punishmentPlayerType, mutedState))
-                                .exceptionally(ex -> {
-                                    getPluginLogger().info(Constants.getErrMute() + ex);
-                                    return null;
-                                });
+                } else if (getApi() == null) {
+                    ReactionStage<Integer> isMuted = getLibertyBansApiHelper().checkMuted(getApi(), punishmentPlayerType);
+                    isMuted.thenAcceptAsync(mutedState -> checkResponse(punishmentPlayerType, mutedState))
+                            .exceptionally(ex -> {
+                                getPluginLogger().info(Constants.getErrMute() + ex);
+                                return null;
+                            });
                 }
             }
         }
