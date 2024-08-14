@@ -23,7 +23,7 @@ import space.arim.omnibus.OmnibusProvider;
 import java.net.InetAddress;
 import java.util.*;
 
-@Plugin(id = "simplevoicebans", name = "SimpleVoiceBans", version = "1.4", authors = {"KoxSosen"})
+@Plugin(id = "simplevoicebans", name = "SimpleVoiceBans", version = "1.5-SNAPSHOT", authors = {"KoxSosen"})
 
 public class VelocityPluginLoader implements AbstractPlatform<ProxyServer, Player, ServerConnection> {
 
