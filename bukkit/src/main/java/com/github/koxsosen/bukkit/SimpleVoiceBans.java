@@ -77,12 +77,12 @@ public class SimpleVoiceBans implements VoicechatPlugin {
                     event.cancel();
                 }
             } else {
-                if (isIsBungee()) {
+                if (isIsBungee() && getApi() != null) {
                     if (!getUuidSet().contains(eventPlayer.getUniqueId())) {
                         getMorePaperLib().scheduling().asyncScheduler().run(() -> getMessageSender().sendPluginMessage(eventPlayer.getUniqueId(), getPlatform(), new PunishmentPlayerType(uuid, inetAddress)));
                     }
                     getUuidSet().add(eventPlayer.getUniqueId());
-                } else if (getApi() == null) {
+                } else {
                     ReactionStage<Integer> isMuted = getLibertyBansApiHelper().checkMuted(getApi(), punishmentPlayerType);
                     isMuted.thenAcceptAsync(mutedState -> checkResponse(punishmentPlayerType, mutedState))
                             .exceptionally(ex -> {
